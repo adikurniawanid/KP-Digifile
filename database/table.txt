@@ -1,41 +1,17 @@
--- Table: public.owners
+-- Table: public.detail_activity
 
--- DROP TABLE public.owners;
+-- DROP TABLE public.detail_activity;
 
-CREATE TABLE public.owners
+CREATE TABLE public.detail_activity
 (
-    username character varying COLLATE pg_catalog."default" NOT NULL,
-    name character varying COLLATE pg_catalog."default" NOT NULL,
-    password character varying COLLATE pg_catalog."default" NOT NULL,
-    phone character varying COLLATE pg_catalog."default" NOT NULL,
-    email character varying COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT owners_pkey PRIMARY KEY (username)
+    activity_id integer NOT NULL,
+    description character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT detail_activity_pkey PRIMARY KEY (activity_id)
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.owners
-    OWNER to akdev;
-
--- Table: public.users
-
--- DROP TABLE public.users;
-
-CREATE TABLE public.users
-(
-    username character varying COLLATE pg_catalog."default" NOT NULL,
-    name character varying COLLATE pg_catalog."default" NOT NULL,
-    password character varying COLLATE pg_catalog."default" NOT NULL,
-    phone character varying COLLATE pg_catalog."default" NOT NULL,
-    email character varying COLLATE pg_catalog."default" NOT NULL,
-    space double precision NOT NULL,
-    login_status boolean,
-    CONSTRAINT users_pkey PRIMARY KEY (username)
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE public.users
+ALTER TABLE public.detail_activity
     OWNER to akdev;
     
 -- Table: public.files
@@ -44,7 +20,7 @@ ALTER TABLE public.users
 
 CREATE TABLE public.files
 (
-    file_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    file_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 999999 CACHE 1 ),
     file_name character varying COLLATE pg_catalog."default" NOT NULL,
     directory character varying COLLATE pg_catalog."default" NOT NULL,
     size double precision NOT NULL,
@@ -55,6 +31,25 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.files
     OWNER to akdev;
+
+-- Table: public.log_activity
+
+-- DROP TABLE public.log_activity;
+
+CREATE TABLE public.log_activity
+(
+    log_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 999999 CACHE 1 ),
+    username character varying COLLATE pg_catalog."default" NOT NULL,
+    file_id integer NOT NULL,
+    activity_id integer NOT NULL,
+    activity_date date NOT NULL,
+    CONSTRAINT log_activity_pkey PRIMARY KEY (log_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE public.log_activity
+    OWNER to akdev;
     
 -- Table: public.trash
 
@@ -62,11 +57,11 @@ ALTER TABLE public.files
 
 CREATE TABLE public.trash
 (
-    trash_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-    file_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    trash_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 999999 CACHE 1 ),
+    file_id integer NOT NULL,
     file_name character varying COLLATE pg_catalog."default" NOT NULL,
     directory character varying COLLATE pg_catalog."default" NOT NULL,
-    size integer NOT NULL,
+    size double precision NOT NULL,
     delete_date date NOT NULL,
     CONSTRAINT trash_pkey PRIMARY KEY (trash_id)
 )
@@ -76,46 +71,24 @@ TABLESPACE pg_default;
 ALTER TABLE public.trash
     OWNER to akdev;
     
--- Table: public.log_activity
+-- Table: public.users
 
--- DROP TABLE public.log_activity;
+-- DROP TABLE public.users;
 
-CREATE TABLE public.log_activity
+CREATE TABLE public.users
 (
-    log_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-    username character varying COLLATE pg_catalog."default" NOT NULL,
-    file_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-    activity_date date NOT NULL,
-    activity_id integer NOT NULL,
-    size double precision NOT NULL,
-    CONSTRAINT log_activity_pkey PRIMARY KEY (log_id),
-    CONSTRAINT fk_file_id FOREIGN KEY (file_id)
-        REFERENCES public.files (file_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT fk_username FOREIGN KEY (username)
-        REFERENCES public.users (username) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    username character varying(18) COLLATE pg_catalog."default" NOT NULL,
+    name character varying(55) COLLATE pg_catalog."default" NOT NULL,
+    password character varying COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(15) COLLATE pg_catalog."default" NOT NULL,
+    email character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    space double precision,
+    unused_space double precision,
+    level integer,
+    CONSTRAINT user_pkey PRIMARY KEY (username)
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.log_activity
-    OWNER to akdev;
-
--- Table: public.detail_activity
-
--- DROP TABLE public.detail_activity;
-
-CREATE TABLE public.detail_activity
-(
-    activity_id integer NOT NULL,
-    activity_name character varying COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT detail_activity_pkey PRIMARY KEY (activity_id)
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE public.detail_activity
+ALTER TABLE public.users
     OWNER to akdev;
