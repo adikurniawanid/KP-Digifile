@@ -24,6 +24,7 @@ CREATE TABLE public.files
     file_name character varying COLLATE pg_catalog."default" NOT NULL,
     directory character varying COLLATE pg_catalog."default" NOT NULL,
     size double precision NOT NULL,
+    trash_status boolean NOT NULL,
     CONSTRAINT files_pkey PRIMARY KEY (file_id)
 )
 
@@ -43,32 +44,27 @@ CREATE TABLE public.log_activity
     file_id integer NOT NULL,
     activity_id integer NOT NULL,
     activity_date date NOT NULL,
-    CONSTRAINT log_activity_pkey PRIMARY KEY (log_id)
+    CONSTRAINT log_activity_pkey PRIMARY KEY (log_id),
+    CONSTRAINT fk_activity_id FOREIGN KEY (activity_id)
+        REFERENCES public.detail_activity (activity_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT fk_file_id FOREIGN KEY (file_id)
+        REFERENCES public.files (file_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT fk_username FOREIGN KEY (username)
+        REFERENCES public.users (username) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
 )
 
 TABLESPACE pg_default;
 
 ALTER TABLE public.log_activity
-    OWNER to akdev;
-    
--- Table: public.trash
-
--- DROP TABLE public.trash;
-
-CREATE TABLE public.trash
-(
-    trash_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 999999 CACHE 1 ),
-    file_id integer NOT NULL,
-    file_name character varying COLLATE pg_catalog."default" NOT NULL,
-    directory character varying COLLATE pg_catalog."default" NOT NULL,
-    size double precision NOT NULL,
-    delete_date date NOT NULL,
-    CONSTRAINT trash_pkey PRIMARY KEY (trash_id)
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE public.trash
     OWNER to akdev;
     
 -- Table: public.users
