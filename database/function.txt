@@ -1,0 +1,34 @@
+-- FUNCTION: public.add_user(character varying, character varying, character varying, character varying, character varying, double precision)
+
+-- DROP FUNCTION public.add_user(character varying, character varying, character varying, character varying, character varying, double precision);
+
+CREATE OR REPLACE FUNCTION public.add_user(
+	username character varying,
+	name character varying,
+	password character varying,
+	phone character varying,
+	email character varying,
+	space double precision)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+    
+AS $BODY$
+BEGIN
+INSERT INTO users VALUES (
+	username,
+	name,
+	password,
+	phone,
+	email,
+	space,
+	NULL,
+	'2'
+);
+END
+$BODY$;
+
+ALTER FUNCTION public.add_user(character varying, character varying, character varying, character varying, character varying, double precision)
+    OWNER TO akdev;
