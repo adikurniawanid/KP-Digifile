@@ -1,14 +1,14 @@
--- FUNCTION: public.add_user(character varying, character varying, character varying, character varying, character varying, double precision)
+-- FUNCTION: public.add_user(character varying, character varying, character varying, character varying, character varying, integer)
 
--- DROP FUNCTION public.add_user(character varying, character varying, character varying, character varying, character varying, double precision);
+-- DROP FUNCTION public.add_user(character varying, character varying, character varying, character varying, character varying, integer);
 
 CREATE OR REPLACE FUNCTION public.add_user(
-	username character varying,
-	name character varying,
-	password character varying,
-	phone character varying,
-	email character varying,
-	space double precision)
+	_username character varying,
+	_name character varying,
+	_password character varying,
+	_phone character varying,
+	_email character varying,
+	_space integer)
     RETURNS void
     LANGUAGE 'plpgsql'
 
@@ -17,18 +17,104 @@ CREATE OR REPLACE FUNCTION public.add_user(
     
 AS $BODY$
 BEGIN
-INSERT INTO users VALUES (
-	username,
-	name,
-	password,
-	phone,
-	email,
-	space,
-	NULL,
-	'2'
-);
+INSERT INTO users 
+(username, name, password, phone, email, space, unused_space, level)
+VALUES
+(_username, _name, _password, _phone, _email, _space, 0, 2);
 END
 $BODY$;
 
-ALTER FUNCTION public.add_user(character varying, character varying, character varying, character varying, character varying, double precision)
+ALTER FUNCTION public.add_user(character varying, character varying, character varying, character varying, character varying, integer)
+    OWNER TO akdev;
+
+-- FUNCTION: public.delete_file(integer, character varying)
+
+-- DROP FUNCTION public.delete_file(integer, character varying);
+
+CREATE OR REPLACE FUNCTION public.delete_file(
+	_file_id integer,
+	_username character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+    
+AS $BODY$
+BEGIN
+UPDATE files SET trash_status = true
+WHERE file_id = _file_id AND owner = _username;
+END
+$BODY$;
+
+ALTER FUNCTION public.delete_file(integer, character varying)
+    OWNER TO akdev;
+
+-- FUNCTION: public.delete_trash(character varying, integer)
+
+-- DROP FUNCTION public.delete_trash(character varying, integer);
+
+CREATE OR REPLACE FUNCTION public.delete_trash(
+	_owner character varying,
+	_file_id integer)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+    
+AS $BODY$
+BEGIN
+DELETE FROM files 
+WHERE trash_status = true AND file_id = _file_id AND owner =_owner ;
+END
+$BODY$;
+
+ALTER FUNCTION public.delete_trash(character varying, integer)
+    OWNER TO akdev;
+
+-- FUNCTION: public.recovery_trash(integer, character varying)
+
+-- DROP FUNCTION public.recovery_trash(integer, character varying);
+
+CREATE OR REPLACE FUNCTION public.recovery_trash(
+	_file_id integer,
+	_username character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+    
+AS $BODY$
+BEGIN
+UPDATE files SET trash_status = false
+WHERE file_id = _file_id AND owner = _username;
+END
+$BODY$;
+
+ALTER FUNCTION public.recovery_trash(integer, character varying)
+    OWNER TO akdev;
+
+-- FUNCTION: public.rename_file(integer, character varying)
+
+-- DROP FUNCTION public.rename_file(integer, character varying);
+
+CREATE OR REPLACE FUNCTION public.rename_file(
+	id integer,
+	new_name character varying)
+    RETURNS void
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+    
+AS $BODY$
+BEGIN
+UPDATE files SET file_name = new_name
+WHERE file_id = id;
+END
+$BODY$;
+
+ALTER FUNCTION public.rename_file(integer, character varying)
     OWNER TO akdev;
