@@ -193,3 +193,59 @@ $$;
 
 alter function is_admin(varchar) owner to akdev;
 
+create function get_file_list(in_username character varying)
+    returns TABLE(file_name character varying, size double precision)
+    language plpgsql
+as
+$$
+BEGIN
+    RETURN QUERY SELECT
+        files.file_name, files.size
+    FROM
+        files
+    WHERE
+        files.owner like in_username AND trash_status = false;
+END;
+$$;
+
+alter function get_file_list(varchar) owner to akdev;
+
+create function get_trash_list(in_username character varying)
+    returns TABLE(file_name character varying, size double precision)
+    language plpgsql
+as
+$$
+BEGIN
+    RETURN QUERY SELECT
+        files.file_name, files.size
+    FROM
+        files
+    WHERE
+        files.owner like in_username AND files.trash_status = true;
+END;
+$$;
+
+alter function get_trash_list(varchar) owner to akdev;
+
+create function get_activity_detail(_username character varying)
+    returns TABLE(activity_date date, description character varying)
+    language plpgsql
+as
+$$
+BEGIN
+    RETURN QUERY SELECT
+        log_activity.activity_date,
+        detail_activity.description
+    FROM
+        log_activity
+    INNER JOIN
+        	detail_activity ON log_activity.log_id = detail_activity.activity_id
+    WHERE
+        log_activity.username like _username;
+END;
+$$;
+
+alter function get_activity_detail(varchar) owner to akdev;
+
+
+
