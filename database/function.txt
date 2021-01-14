@@ -118,3 +118,78 @@ $BODY$;
 
 ALTER FUNCTION public.rename_file(integer, character varying)
     OWNER TO akdev;
+
+create function verify_login(in_username character varying, in_password character varying)
+    returns TABLE(username character varying)
+    language plpgsql
+as
+$$
+BEGIN
+    RETURN QUERY SELECT
+        users.username
+    FROM
+        users
+    WHERE
+        users.username like in_username AND password like in_password;
+END;
+$$;
+
+alter function verify_login(varchar, varchar) owner to akdev;
+
+create function is_username_exist(in_username character varying)
+    returns TABLE(username character varying)
+    language plpgsql
+as
+$$
+BEGIN
+    RETURN QUERY SELECT
+        users.username
+    FROM
+        users
+    WHERE
+        users.username like in_username;
+END;
+$$;
+
+alter function is_username_exist(varchar) owner to akdev;
+
+create function is_user(in_username character varying)
+    returns TABLE(username character varying, description character varying)
+    language plpgsql
+as
+$$
+BEGIN
+    RETURN QUERY SELECT
+        users.username,
+        roles.description
+    FROM
+        users
+    INNER JOIN
+        	roles ON roles.role_id = users.role_id
+    WHERE
+        users.username like in_username AND users.role_id = 2;
+END;
+$$;
+
+alter function is_user(varchar) owner to akdev;
+
+create function is_admin(in_username character varying)
+    returns TABLE(username character varying, description character varying)
+    language plpgsql
+as
+$$
+BEGIN
+    RETURN QUERY SELECT
+        users.username,
+        roles.description
+    FROM
+        users
+    INNER JOIN
+        	roles ON roles.role_id = users.role_id
+    WHERE
+        users.username like in_username AND users.role_id = 1;
+END;
+$$;
+
+alter function is_admin(varchar) owner to akdev;
+
