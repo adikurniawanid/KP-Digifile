@@ -5,7 +5,7 @@
 -- Dumped from database version 13.1 (Ubuntu 13.1-1.pgdg20.04+1)
 -- Dumped by pg_dump version 13.1 (Ubuntu 13.1-1.pgdg20.04+1)
 
--- Started on 2021-01-14 14:25:51 WIB
+-- Started on 2021-01-17 17:46:58 WIB
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,24 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 222 (class 1255 OID 17044)
+-- TOC entry 2 (class 3079 OID 17126)
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+
+
+--
+-- TOC entry 3066 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
+
+
+--
+-- TOC entry 232 (class 1255 OID 17044)
 -- Name: add_file(character varying, character varying, double precision, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -38,7 +55,7 @@ $$;
 ALTER FUNCTION public.add_file(_file_name character varying, _directory character varying, _size double precision, _owner character varying) OWNER TO akdev;
 
 --
--- TOC entry 225 (class 1255 OID 17002)
+-- TOC entry 237 (class 1255 OID 17002)
 -- Name: add_user(character varying, character varying, character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -49,7 +66,7 @@ BEGIN
 INSERT INTO users 
 (username, name, password, phone, email, space, unused_space, role_id)
 VALUES
-(_username, _name, _password, _phone, _email, _space, 0, 2);
+(_username, _name, (select digest(_password,'sha256')), _phone, _email, _space, 0, 2);
 END
 $$;
 
@@ -57,26 +74,7 @@ $$;
 ALTER FUNCTION public.add_user(_username character varying, _name character varying, _password character varying, _phone character varying, _email character varying, _space integer) OWNER TO akdev;
 
 --
--- TOC entry 224 (class 1255 OID 17062)
--- Name: add_user_sha256(character varying, character varying, character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: akdev
---
-
-CREATE FUNCTION public.add_user_sha256(_username character varying, _name character varying, _password character varying, _phone character varying, _email character varying, _space integer) RETURNS void
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-INSERT INTO users
-(username, name, password, phone, email, space, unused_space, role_id)
-VALUES
-(_username, _name, crypt(_password, gen_salt('SHA256')), _phone, _email, _space, 0, 2);
-END
-$$;
-
-
-ALTER FUNCTION public.add_user_sha256(_username character varying, _name character varying, _password character varying, _phone character varying, _email character varying, _space integer) OWNER TO akdev;
-
---
--- TOC entry 221 (class 1255 OID 17033)
+-- TOC entry 231 (class 1255 OID 17033)
 -- Name: add_user_space(character varying, integer); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -93,7 +91,7 @@ $$;
 ALTER FUNCTION public.add_user_space(_username character varying, _space integer) OWNER TO akdev;
 
 --
--- TOC entry 208 (class 1255 OID 17007)
+-- TOC entry 218 (class 1255 OID 17007)
 -- Name: delete_file(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -110,7 +108,7 @@ $$;
 ALTER FUNCTION public.delete_file(_file_id integer, _username character varying) OWNER TO akdev;
 
 --
--- TOC entry 229 (class 1255 OID 17083)
+-- TOC entry 236 (class 1255 OID 17083)
 -- Name: delete_trash(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -127,7 +125,7 @@ $$;
 ALTER FUNCTION public.delete_trash(_file_id integer, _owner character varying) OWNER TO akdev;
 
 --
--- TOC entry 223 (class 1255 OID 17046)
+-- TOC entry 233 (class 1255 OID 17046)
 -- Name: get_activity_detail(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -150,7 +148,7 @@ END; $$;
 ALTER FUNCTION public.get_activity_detail(_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 231 (class 1255 OID 17091)
+-- TOC entry 239 (class 1255 OID 17091)
 -- Name: get_file_list(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -171,7 +169,7 @@ $$;
 ALTER FUNCTION public.get_file_list(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 232 (class 1255 OID 17092)
+-- TOC entry 240 (class 1255 OID 17092)
 -- Name: get_trash_list(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -192,7 +190,7 @@ $$;
 ALTER FUNCTION public.get_trash_list(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 226 (class 1255 OID 17079)
+-- TOC entry 234 (class 1255 OID 17079)
 -- Name: is_admin(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -215,7 +213,7 @@ END; $$;
 ALTER FUNCTION public.is_admin(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 230 (class 1255 OID 17082)
+-- TOC entry 238 (class 1255 OID 17082)
 -- Name: is_user(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -239,7 +237,7 @@ $$;
 ALTER FUNCTION public.is_user(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 227 (class 1255 OID 17080)
+-- TOC entry 235 (class 1255 OID 17080)
 -- Name: is_username_exist(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -259,7 +257,7 @@ END; $$;
 ALTER FUNCTION public.is_username_exist(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 207 (class 1255 OID 17005)
+-- TOC entry 217 (class 1255 OID 17005)
 -- Name: recovery_trash(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -276,7 +274,7 @@ $$;
 ALTER FUNCTION public.recovery_trash(_file_id integer, _username character varying) OWNER TO akdev;
 
 --
--- TOC entry 214 (class 1255 OID 16951)
+-- TOC entry 224 (class 1255 OID 16951)
 -- Name: rename_file(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -293,11 +291,45 @@ $$;
 ALTER FUNCTION public.rename_file(id integer, new_name character varying) OWNER TO akdev;
 
 --
--- TOC entry 228 (class 1255 OID 17081)
--- Name: verify_login(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
+-- TOC entry 242 (class 1255 OID 17103)
+-- Name: set_offline(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.verify_login(in_username character varying, in_password character varying) RETURNS TABLE(username character varying)
+CREATE FUNCTION public.set_offline(_username character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+UPDATE users SET status = 2
+WHERE username = _username;
+END
+$$;
+
+
+ALTER FUNCTION public.set_offline(_username character varying) OWNER TO akdev;
+
+--
+-- TOC entry 241 (class 1255 OID 17102)
+-- Name: set_online(character varying); Type: FUNCTION; Schema: public; Owner: akdev
+--
+
+CREATE FUNCTION public.set_online(_username character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+UPDATE users SET status = 1
+WHERE username = _username;
+END
+$$;
+
+
+ALTER FUNCTION public.set_online(_username character varying) OWNER TO akdev;
+
+--
+-- TOC entry 271 (class 1255 OID 17175)
+-- Name: verify_login(character varying, bytea); Type: FUNCTION; Schema: public; Owner: akdev
+--
+
+CREATE FUNCTION public.verify_login(in_username character varying, in_password bytea) RETURNS TABLE(username character varying)
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -306,18 +338,19 @@ BEGIN
     FROM
         users
     WHERE
-        users.username like in_username AND password like in_password;
-END; $$;
+        users.username like in_username AND password like (select digest(in_password,'sha256'));
+END;
+$$;
 
 
-ALTER FUNCTION public.verify_login(in_username character varying, in_password character varying) OWNER TO akdev;
+ALTER FUNCTION public.verify_login(in_username character varying, in_password bytea) OWNER TO akdev;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- TOC entry 201 (class 1259 OID 16887)
+-- TOC entry 202 (class 1259 OID 16887)
 -- Name: detail_activity; Type: TABLE; Schema: public; Owner: akdev
 --
 
@@ -330,7 +363,7 @@ CREATE TABLE public.detail_activity (
 ALTER TABLE public.detail_activity OWNER TO akdev;
 
 --
--- TOC entry 203 (class 1259 OID 16965)
+-- TOC entry 204 (class 1259 OID 16965)
 -- Name: files; Type: TABLE; Schema: public; Owner: akdev
 --
 
@@ -347,7 +380,7 @@ CREATE TABLE public.files (
 ALTER TABLE public.files OWNER TO akdev;
 
 --
--- TOC entry 202 (class 1259 OID 16963)
+-- TOC entry 203 (class 1259 OID 16963)
 -- Name: files_file_id_seq; Type: SEQUENCE; Schema: public; Owner: akdev
 --
 
@@ -362,7 +395,7 @@ ALTER TABLE public.files ALTER COLUMN file_id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 205 (class 1259 OID 16975)
+-- TOC entry 206 (class 1259 OID 16975)
 -- Name: log_activity; Type: TABLE; Schema: public; Owner: akdev
 --
 
@@ -378,7 +411,7 @@ CREATE TABLE public.log_activity (
 ALTER TABLE public.log_activity OWNER TO akdev;
 
 --
--- TOC entry 204 (class 1259 OID 16973)
+-- TOC entry 205 (class 1259 OID 16973)
 -- Name: log_activity_log_id_seq; Type: SEQUENCE; Schema: public; Owner: akdev
 --
 
@@ -393,7 +426,7 @@ ALTER TABLE public.log_activity ALTER COLUMN log_id ADD GENERATED ALWAYS AS IDEN
 
 
 --
--- TOC entry 206 (class 1259 OID 17009)
+-- TOC entry 207 (class 1259 OID 17009)
 -- Name: roles; Type: TABLE; Schema: public; Owner: akdev
 --
 
@@ -406,27 +439,41 @@ CREATE TABLE public.roles (
 ALTER TABLE public.roles OWNER TO akdev;
 
 --
--- TOC entry 200 (class 1259 OID 16874)
+-- TOC entry 208 (class 1259 OID 17093)
+-- Name: status_login; Type: TABLE; Schema: public; Owner: akdev
+--
+
+CREATE TABLE public.status_login (
+    status_id integer NOT NULL,
+    description character varying NOT NULL
+);
+
+
+ALTER TABLE public.status_login OWNER TO akdev;
+
+--
+-- TOC entry 201 (class 1259 OID 16874)
 -- Name: users; Type: TABLE; Schema: public; Owner: akdev
 --
 
 CREATE TABLE public.users (
     username character varying(18) NOT NULL,
     name character varying(55) NOT NULL,
-    password character varying NOT NULL,
+    password bytea NOT NULL,
     phone character varying(15) NOT NULL,
     email character varying(30) NOT NULL,
     space integer,
     unused_space double precision,
-    role_id integer
+    role_id integer,
+    status integer
 );
 
 
 ALTER TABLE public.users OWNER TO akdev;
 
 --
--- TOC entry 3007 (class 0 OID 16887)
--- Dependencies: 201
+-- TOC entry 3054 (class 0 OID 16887)
+-- Dependencies: 202
 -- Data for Name: detail_activity; Type: TABLE DATA; Schema: public; Owner: akdev
 --
 
@@ -444,8 +491,8 @@ COPY public.detail_activity (activity_id, description) FROM stdin;
 
 
 --
--- TOC entry 3009 (class 0 OID 16965)
--- Dependencies: 203
+-- TOC entry 3056 (class 0 OID 16965)
+-- Dependencies: 204
 -- Data for Name: files; Type: TABLE DATA; Schema: public; Owner: akdev
 --
 
@@ -457,8 +504,8 @@ COPY public.files (file_id, file_name, directory, size, trash_status, owner) FRO
 
 
 --
--- TOC entry 3011 (class 0 OID 16975)
--- Dependencies: 205
+-- TOC entry 3058 (class 0 OID 16975)
+-- Dependencies: 206
 -- Data for Name: log_activity; Type: TABLE DATA; Schema: public; Owner: akdev
 --
 
@@ -470,8 +517,8 @@ COPY public.log_activity (log_id, username, file_id, activity_id, activity_date)
 
 
 --
--- TOC entry 3012 (class 0 OID 17009)
--- Dependencies: 206
+-- TOC entry 3059 (class 0 OID 17009)
+-- Dependencies: 207
 -- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: akdev
 --
 
@@ -482,25 +529,40 @@ COPY public.roles (role_id, description) FROM stdin;
 
 
 --
--- TOC entry 3006 (class 0 OID 16874)
--- Dependencies: 200
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: akdev
+-- TOC entry 3060 (class 0 OID 17093)
+-- Dependencies: 208
+-- Data for Name: status_login; Type: TABLE DATA; Schema: public; Owner: akdev
 --
 
-COPY public.users (username, name, password, phone, email, space, unused_space, role_id) FROM stdin;
-akdev	Adi Kurniawan	\\x1e0eb17eda954e512249390012f077a6549fbe2d72c99831dbdc450ed0d0e1f2	082182751010	adikurniawan.dev@gmail.com	\N	\N	1
-feals	Febyk Alek Satria	feals	081373107544	febykaleksatria@gmail.com	2	\N	2
-rsf	Roni Starko Firdaus	rsf	0895621854457	rsf.project@gmail.com	3	\N	2
-testtest	test	test	0808	test@mail.com	10	0	2
-dkp	Desry Kencana Putri	dkp	085216126556	desrykencanaputri@gmail.com	16	\N	2
-adi	adi keren	adi	082182751010	adikeren@gmail.com	5	0	2
-ariqkun	ariq jagajaga	ariqkun	09090908	ariqkun@mail.com	1	0	2
+COPY public.status_login (status_id, description) FROM stdin;
+1	aktif
+0	nonaktif
 \.
 
 
 --
--- TOC entry 3018 (class 0 OID 0)
--- Dependencies: 202
+-- TOC entry 3053 (class 0 OID 16874)
+-- Dependencies: 201
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: akdev
+--
+
+COPY public.users (username, name, password, phone, email, space, unused_space, role_id, status) FROM stdin;
+dkp	Desry Kencana Putri	\\x646b70	085216126556	desrykencanaputri@gmail.com	16	\N	2	0
+rsf	Roni Starko Firdaus	\\x727366	0895621854457	rsf.project@gmail.com	3	\N	2	0
+testtest	test	\\x74657374	0808	test@mail.com	10	0	2	0
+feals	Febyk Alek Satria	\\x6665616c73	081373107544	febykaleksatria@gmail.com	2	\N	2	0
+ariqkun	ariq jagajaga	\\x617269716b756e	09090908	ariqkun@mail.com	1	0	2	0
+akdev	Adi Kurniawan	\\x1e0eb17eda954e512249390012f077a6549fbe2d72c99831dbdc450ed0d0e1f2	082182751010	adikurniawan.dev@gmail.com	\N	\N	1	0
+adi	adi keren	\\x616469	082182751010	adikeren@gmail.com	5	0	2	0
+adik	adik	\\x0047bad3d698950894fd8c3a98084ce2d52d62ea93e9e874862876f1f3d1e7d8	090909	adi@mail.com	5	0	2	\N
+adikurni	adik	\\x0047bad3d698950894fd8c3a98084ce2d52d62ea93e9e874862876f1f3d1e7d8	090909	adi@mail.com	5	0	2	\N
+sayang	sayang	\\xf84cf1c5a4e5436b88c50f7ae39ebae74b8ba9b8283ca5971fb1d74b667cc944	090909	sayang@mail.com	5	0	2	\N
+\.
+
+
+--
+-- TOC entry 3067 (class 0 OID 0)
+-- Dependencies: 203
 -- Name: files_file_id_seq; Type: SEQUENCE SET; Schema: public; Owner: akdev
 --
 
@@ -508,8 +570,8 @@ SELECT pg_catalog.setval('public.files_file_id_seq', 3, true);
 
 
 --
--- TOC entry 3019 (class 0 OID 0)
--- Dependencies: 204
+-- TOC entry 3068 (class 0 OID 0)
+-- Dependencies: 205
 -- Name: log_activity_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: akdev
 --
 
@@ -517,7 +579,7 @@ SELECT pg_catalog.setval('public.log_activity_log_id_seq', 3, true);
 
 
 --
--- TOC entry 2865 (class 2606 OID 16894)
+-- TOC entry 2908 (class 2606 OID 16894)
 -- Name: detail_activity detail_activity_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -526,7 +588,16 @@ ALTER TABLE ONLY public.detail_activity
 
 
 --
--- TOC entry 2867 (class 2606 OID 16972)
+-- TOC entry 2916 (class 2606 OID 17101)
+-- Name: status_login detail_status_pk; Type: CONSTRAINT; Schema: public; Owner: akdev
+--
+
+ALTER TABLE ONLY public.status_login
+    ADD CONSTRAINT detail_status_pk PRIMARY KEY (status_id);
+
+
+--
+-- TOC entry 2910 (class 2606 OID 16972)
 -- Name: files files_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -535,7 +606,7 @@ ALTER TABLE ONLY public.files
 
 
 --
--- TOC entry 2869 (class 2606 OID 16982)
+-- TOC entry 2912 (class 2606 OID 16982)
 -- Name: log_activity log_activity_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -544,7 +615,7 @@ ALTER TABLE ONLY public.log_activity
 
 
 --
--- TOC entry 2871 (class 2606 OID 17016)
+-- TOC entry 2914 (class 2606 OID 17016)
 -- Name: roles role_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -553,7 +624,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- TOC entry 2863 (class 2606 OID 16881)
+-- TOC entry 2906 (class 2606 OID 16881)
 -- Name: users user_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -562,7 +633,15 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2873 (class 2606 OID 16983)
+-- TOC entry 2917 (class 1259 OID 17099)
+-- Name: detail_status_status_id_uindex; Type: INDEX; Schema: public; Owner: akdev
+--
+
+CREATE UNIQUE INDEX detail_status_status_id_uindex ON public.status_login USING btree (status_id);
+
+
+--
+-- TOC entry 2920 (class 2606 OID 16983)
 -- Name: log_activity fk_activity_id; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -571,7 +650,7 @@ ALTER TABLE ONLY public.log_activity
 
 
 --
--- TOC entry 2874 (class 2606 OID 16988)
+-- TOC entry 2921 (class 2606 OID 16988)
 -- Name: log_activity fk_file_id; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -580,7 +659,7 @@ ALTER TABLE ONLY public.log_activity
 
 
 --
--- TOC entry 2872 (class 2606 OID 17017)
+-- TOC entry 2918 (class 2606 OID 17017)
 -- Name: users fk_level; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -589,7 +668,16 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2875 (class 2606 OID 16993)
+-- TOC entry 2919 (class 2606 OID 17105)
+-- Name: users fk_status; Type: FK CONSTRAINT; Schema: public; Owner: akdev
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_status FOREIGN KEY (status) REFERENCES public.status_login(status_id);
+
+
+--
+-- TOC entry 2922 (class 2606 OID 16993)
 -- Name: log_activity fk_username; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -597,7 +685,7 @@ ALTER TABLE ONLY public.log_activity
     ADD CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES public.users(username);
 
 
--- Completed on 2021-01-14 14:25:51 WIB
+-- Completed on 2021-01-17 17:46:58 WIB
 
 --
 -- PostgreSQL database dump complete
