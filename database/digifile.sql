@@ -5,7 +5,7 @@
 -- Dumped from database version 13.1 (Ubuntu 13.1-1.pgdg20.04+1)
 -- Dumped by pg_dump version 13.1 (Ubuntu 13.1-1.pgdg20.04+1)
 
--- Started on 2021-01-20 21:34:44 WIB
+-- Started on 2021-01-21 11:28:17 WIB
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -27,7 +27,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 
 
 --
--- TOC entry 3086 (class 0 OID 0)
+-- TOC entry 3098 (class 0 OID 0)
 -- Dependencies: 2
 -- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
 --
@@ -86,7 +86,7 @@ $$;
 ALTER FUNCTION public.add_user(_username character varying, _name character varying, _password character varying, _phone character varying, _email character varying, _space integer) OWNER TO akdev;
 
 --
--- TOC entry 232 (class 1255 OID 17033)
+-- TOC entry 233 (class 1255 OID 17033)
 -- Name: add_user_space(character varying, integer); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -103,7 +103,7 @@ $$;
 ALTER FUNCTION public.add_user_space(_username character varying, _space integer) OWNER TO akdev;
 
 --
--- TOC entry 219 (class 1255 OID 17007)
+-- TOC entry 220 (class 1255 OID 17007)
 -- Name: delete_file(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -120,7 +120,7 @@ $$;
 ALTER FUNCTION public.delete_file(_file_id integer, _username character varying) OWNER TO akdev;
 
 --
--- TOC entry 234 (class 1255 OID 17083)
+-- TOC entry 235 (class 1255 OID 17083)
 -- Name: delete_trash(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -137,7 +137,7 @@ $$;
 ALTER FUNCTION public.delete_trash(_file_id integer, _owner character varying) OWNER TO akdev;
 
 --
--- TOC entry 280 (class 1255 OID 25393)
+-- TOC entry 279 (class 1255 OID 25393)
 -- Name: get_activity_detail(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -184,7 +184,7 @@ $$;
 ALTER FUNCTION public.get_file_list(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 269 (class 1255 OID 17184)
+-- TOC entry 270 (class 1255 OID 17184)
 -- Name: get_information_storage(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -204,7 +204,23 @@ $$;
 ALTER FUNCTION public.get_information_storage(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 236 (class 1255 OID 17092)
+-- TOC entry 282 (class 1255 OID 25442)
+-- Name: get_name(character varying); Type: FUNCTION; Schema: public; Owner: akdev
+--
+
+CREATE FUNCTION public.get_name(_username character varying) RETURNS TABLE(name character varying)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY EXECUTE (SELECT users.name::varchar FROM users WHERE users.username = _username);
+END;
+$$;
+
+
+ALTER FUNCTION public.get_name(_username character varying) OWNER TO akdev;
+
+--
+-- TOC entry 237 (class 1255 OID 17092)
 -- Name: get_trash_list(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -268,7 +284,7 @@ $$;
 ALTER FUNCTION public.is_enough_space(in_space integer, in_used_space double precision, in_size double precision) OWNER TO akdev;
 
 --
--- TOC entry 235 (class 1255 OID 17082)
+-- TOC entry 236 (class 1255 OID 17082)
 -- Name: is_user(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -292,7 +308,7 @@ $$;
 ALTER FUNCTION public.is_user(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 233 (class 1255 OID 17080)
+-- TOC entry 234 (class 1255 OID 17080)
 -- Name: is_username_exist(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -378,7 +394,7 @@ $$;
 ALTER FUNCTION public.log_rename_file() OWNER TO akdev;
 
 --
--- TOC entry 279 (class 1255 OID 25387)
+-- TOC entry 280 (class 1255 OID 25387)
 -- Name: log_upload_file(); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -386,14 +402,12 @@ CREATE FUNCTION public.log_upload_file() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
---  	IF NEW.trash_status = FALSE THEN
  	INSERT INTO log_activity
  	(file_id, username, activity_id, activity_date, file_name)
  	VALUES
  	(NEW.file_id, NEW.owner, 6, now(), NEW.file_name);
 
---     UPDATE users set users.used_space = users.used_space + NEW.size where username = NEW.owner;
---  END IF;
+--     UPDATE users set users.used_space = (users.used_space + NEW.size) where users.username = username;
  RETURN NEW;
  END;
 $$;
@@ -402,7 +416,7 @@ $$;
 ALTER FUNCTION public.log_upload_file() OWNER TO akdev;
 
 --
--- TOC entry 218 (class 1255 OID 17005)
+-- TOC entry 219 (class 1255 OID 17005)
 -- Name: recovery_trash(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -419,7 +433,7 @@ $$;
 ALTER FUNCTION public.recovery_trash(_file_id integer, _username character varying) OWNER TO akdev;
 
 --
--- TOC entry 225 (class 1255 OID 16951)
+-- TOC entry 226 (class 1255 OID 16951)
 -- Name: rename_file(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -436,7 +450,7 @@ $$;
 ALTER FUNCTION public.rename_file(id integer, new_name character varying) OWNER TO akdev;
 
 --
--- TOC entry 268 (class 1255 OID 17183)
+-- TOC entry 269 (class 1255 OID 17183)
 -- Name: rename_folder(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -453,41 +467,42 @@ $$;
 ALTER FUNCTION public.rename_folder(id integer, new_directory character varying) OWNER TO akdev;
 
 --
--- TOC entry 270 (class 1255 OID 17185)
--- Name: search(character varying, integer, date, date); Type: FUNCTION; Schema: public; Owner: akdev
+-- TOC entry 283 (class 1255 OID 25443)
+-- Name: search(character varying, integer, timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.search(in_name character varying, in_activity_id integer, in_start_date date, in_end_date date) RETURNS TABLE(name character varying, last_activity_date date, last_activity character varying, used_space double precision, space integer, status character varying)
+CREATE FUNCTION public.search(in_name character varying, in_activity_id integer, in_start_date timestamp without time zone, in_end_date timestamp without time zone) RETURNS TABLE(name character varying, last_activity_date date, last_activity character varying, used_space double precision, space integer, status character varying)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-    SELECT
-        u.username as Nama,
-        la.activity_date as Last_Activity_Date,
-        da.description as Last_Activity,
-        u.space as Space,
-        u.used_space as Used_Space,
-        sl.description as Status
-    FROM
-        users u
-    LEFT JOIN log_activity la on u.username = la.username
-    LEFT JOIN detail_activity da on da.activity_id = la.activity_id
-    LEFT JOIN status_login sl on u.status = sl.status_id
-    WHERE
-    u.username = in_name
-    AND la.activity_id = in_activity_id
-    AND la.activity_date >= in_start_date
-    AND la.activity_date <= in_end_date;
-
+SELECT u.name                                             AS nama,
+       to_char(t2.activity_date, 'day, DD-MM-YYYY'::date) AS to_char,
+       da.description                                     AS last_activity,
+       concat(u.used_space, '/', u.space)                 AS kuota,
+       sl.description                                     AS status
+FROM log_activity la
+         JOIN (SELECT log_activity.username,
+                      max(log_activity.activity_date) AS activity_date
+               FROM log_activity
+               GROUP BY log_activity.username) t2
+              ON la.username::text = t2.username::text AND la.activity_date = t2.activity_date
+         JOIN users u ON u.username::text = la.username::text
+         JOIN detail_activity da ON da.activity_id = la.activity_id
+         JOIN status_login sl ON u.status_id = sl.status_id
+    WHERE u.name = in_name AND
+          da.activity_id = in_activity_id AND
+          t2.activity_date >= in_start_date AND
+          t2.activity_date <= in_end_date
+    ;
 END;
 $$;
 
 
-ALTER FUNCTION public.search(in_name character varying, in_activity_id integer, in_start_date date, in_end_date date) OWNER TO akdev;
+ALTER FUNCTION public.search(in_name character varying, in_activity_id integer, in_start_date timestamp without time zone, in_end_date timestamp without time zone) OWNER TO akdev;
 
 --
--- TOC entry 238 (class 1255 OID 17103)
+-- TOC entry 239 (class 1255 OID 17103)
 -- Name: set_offline(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -504,7 +519,7 @@ $$;
 ALTER FUNCTION public.set_offline(_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 237 (class 1255 OID 17102)
+-- TOC entry 238 (class 1255 OID 17102)
 -- Name: set_online(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -521,7 +536,24 @@ $$;
 ALTER FUNCTION public.set_online(_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 267 (class 1255 OID 17175)
+-- TOC entry 281 (class 1255 OID 25447)
+-- Name: tambah_used_space(); Type: FUNCTION; Schema: public; Owner: akdev
+--
+
+CREATE FUNCTION public.tambah_used_space() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    UPDATE users set "used_space" = (users.used_space + NEW.size) where users.username = OLD.owner;
+ RETURN NEW;
+ END;
+$$;
+
+
+ALTER FUNCTION public.tambah_used_space() OWNER TO akdev;
+
+--
+-- TOC entry 268 (class 1255 OID 17175)
 -- Name: verify_login(character varying, bytea); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -557,6 +589,32 @@ CREATE TABLE public.detail_activity (
 
 
 ALTER TABLE public.detail_activity OWNER TO akdev;
+
+--
+-- TOC entry 206 (class 1259 OID 17093)
+-- Name: detail_status; Type: TABLE; Schema: public; Owner: akdev
+--
+
+CREATE TABLE public.detail_status (
+    status_id integer NOT NULL,
+    description character varying NOT NULL
+);
+
+
+ALTER TABLE public.detail_status OWNER TO akdev;
+
+--
+-- TOC entry 210 (class 1259 OID 25457)
+-- Name: detail_trash; Type: TABLE; Schema: public; Owner: akdev
+--
+
+CREATE TABLE public.detail_trash (
+    trash_id integer NOT NULL,
+    description character varying NOT NULL
+);
+
+
+ALTER TABLE public.detail_trash OWNER TO akdev;
 
 --
 -- TOC entry 204 (class 1259 OID 16965)
@@ -624,7 +682,7 @@ CREATE SEQUENCE public.log_activity_log_id_seq
 ALTER TABLE public.log_activity_log_id_seq OWNER TO akdev;
 
 --
--- TOC entry 3087 (class 0 OID 0)
+-- TOC entry 3099 (class 0 OID 0)
 -- Dependencies: 207
 -- Name: log_activity_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: akdev
 --
@@ -646,19 +704,6 @@ CREATE TABLE public.roles (
 ALTER TABLE public.roles OWNER TO akdev;
 
 --
--- TOC entry 206 (class 1259 OID 17093)
--- Name: status_login; Type: TABLE; Schema: public; Owner: akdev
---
-
-CREATE TABLE public.status_login (
-    status_id integer NOT NULL,
-    description character varying NOT NULL
-);
-
-
-ALTER TABLE public.status_login OWNER TO akdev;
-
---
 -- TOC entry 201 (class 1259 OID 16874)
 -- Name: users; Type: TABLE; Schema: public; Owner: akdev
 --
@@ -671,21 +716,21 @@ CREATE TABLE public.users (
     email character varying(30) NOT NULL,
     space integer,
     used_space double precision,
-    role_id integer,
-    status_id integer
+    role_id integer NOT NULL,
+    status_id integer NOT NULL
 );
 
 
 ALTER TABLE public.users OWNER TO akdev;
 
 --
--- TOC entry 209 (class 1259 OID 25418)
+-- TOC entry 209 (class 1259 OID 25451)
 -- Name: view_log_activity; Type: VIEW; Schema: public; Owner: akdev
 --
 
 CREATE VIEW public.view_log_activity AS
  SELECT u.name AS nama,
-    to_char(t2.activity_date, 'day, DD-MM-YYYY'::text) AS to_char,
+    to_char(t2.activity_date, 'day, DD-MM-YYYY'::text) AS activity_date,
     da.description AS last_activity,
     concat(u.used_space, '/', u.space) AS kuota,
     sl.description AS status
@@ -696,13 +741,13 @@ CREATE VIEW public.view_log_activity AS
           GROUP BY log_activity.username) t2 ON ((((la.username)::text = (t2.username)::text) AND (la.activity_date = t2.activity_date))))
      JOIN public.users u ON (((u.username)::text = (la.username)::text)))
      JOIN public.detail_activity da ON ((da.activity_id = la.activity_id)))
-     JOIN public.status_login sl ON ((u.status_id = sl.status_id)));
+     JOIN public.detail_status sl ON ((u.status_id = sl.status_id)));
 
 
 ALTER TABLE public.view_log_activity OWNER TO akdev;
 
 --
--- TOC entry 2917 (class 2604 OID 17228)
+-- TOC entry 2924 (class 2604 OID 17228)
 -- Name: log_activity log_id; Type: DEFAULT; Schema: public; Owner: akdev
 --
 
@@ -710,7 +755,7 @@ ALTER TABLE ONLY public.log_activity ALTER COLUMN log_id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 3074 (class 0 OID 16887)
+-- TOC entry 3085 (class 0 OID 16887)
 -- Dependencies: 202
 -- Data for Name: detail_activity; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -729,7 +774,31 @@ COPY public.detail_activity (activity_id, description) FROM stdin;
 
 
 --
--- TOC entry 3076 (class 0 OID 16965)
+-- TOC entry 3089 (class 0 OID 17093)
+-- Dependencies: 206
+-- Data for Name: detail_status; Type: TABLE DATA; Schema: public; Owner: akdev
+--
+
+COPY public.detail_status (status_id, description) FROM stdin;
+0	nonaktif
+1	aktif
+\.
+
+
+--
+-- TOC entry 3092 (class 0 OID 25457)
+-- Dependencies: 210
+-- Data for Name: detail_trash; Type: TABLE DATA; Schema: public; Owner: akdev
+--
+
+COPY public.detail_trash (trash_id, description) FROM stdin;
+0	nontrash
+1	trash
+\.
+
+
+--
+-- TOC entry 3087 (class 0 OID 16965)
 -- Dependencies: 204
 -- Data for Name: files; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -738,8 +807,6 @@ COPY public.files (file_id, file_name, directory, size, trash_status, owner) FRO
 3	poto adi	/home/akdev	0.5	f	akdev
 4	potokopi java	a/b/c	6	f	akdev
 5	potokopi java	a/b/c	6	f	akdev
-1	krs	/etc/home	2.5	t	akdev
-2	pas poto ktp	/etc/a	1500	f	akdev
 7	poto aku	rsf/gege	5	f	rsf
 8	poto aku	rsf/gege	5	f	rsf
 10	poto aku	rsf/gege	5	f	rsf
@@ -748,11 +815,19 @@ COPY public.files (file_id, file_name, directory, size, trash_status, owner) FRO
 14	woi	eaea	5	f	akdev
 15	hgg	eaea	5	f	rsf
 12	ea	eaea	5	t	feals
+1	krs	/etc/home	2.5	f	akdev
+2	pas poto ktp	/etc/a	1500	f	akdev
+17	hgg	eaea	5	f	rsf
+19	hgg	eaea	5	f	rsf
+25	hgg	eaea	5	f	rsf
+26	hgg	eaea	5	f	feals
+27	hgg	eaea	5	f	feals
+29	hgg	eaea	5	f	feals
 \.
 
 
 --
--- TOC entry 3080 (class 0 OID 17225)
+-- TOC entry 3091 (class 0 OID 17225)
 -- Dependencies: 208
 -- Data for Name: log_activity; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -762,11 +837,17 @@ COPY public.log_activity (log_id, file_id, username, activity_id, file_name, act
 20	12	feals	9	ea	2021-01-20 14:29:35.307428
 21	12	feals	9	ea	2021-01-20 14:30:51.450341
 22	12	feals	7	ea	2021-01-20 14:32:14.846087
+27	17	rsf	6	hgg	2021-01-21 03:39:11.867521
+28	19	rsf	6	hgg	2021-01-21 03:44:08.688025
+31	25	rsf	6	hgg	2021-01-21 03:57:24.680386
+32	26	feals	6	hgg	2021-01-21 03:59:20.872833
+33	27	feals	6	hgg	2021-01-21 04:00:00.729751
+34	29	feals	6	hgg	2021-01-21 04:03:03.820507
 \.
 
 
 --
--- TOC entry 3077 (class 0 OID 17009)
+-- TOC entry 3088 (class 0 OID 17009)
 -- Dependencies: 205
 -- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -778,19 +859,7 @@ COPY public.roles (role_id, description) FROM stdin;
 
 
 --
--- TOC entry 3078 (class 0 OID 17093)
--- Dependencies: 206
--- Data for Name: status_login; Type: TABLE DATA; Schema: public; Owner: akdev
---
-
-COPY public.status_login (status_id, description) FROM stdin;
-0	nonaktif
-1	aktif
-\.
-
-
---
--- TOC entry 3073 (class 0 OID 16874)
+-- TOC entry 3084 (class 0 OID 16874)
 -- Dependencies: 201
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -805,25 +874,25 @@ rsf	Roni Starko Firdaus	\\xb8dde45084eca2f60dfff1647f525b1a9e91a20b2dc15bd9ab002
 
 
 --
--- TOC entry 3088 (class 0 OID 0)
+-- TOC entry 3100 (class 0 OID 0)
 -- Dependencies: 203
 -- Name: files_file_id_seq; Type: SEQUENCE SET; Schema: public; Owner: akdev
 --
 
-SELECT pg_catalog.setval('public.files_file_id_seq', 15, true);
+SELECT pg_catalog.setval('public.files_file_id_seq', 29, true);
 
 
 --
--- TOC entry 3089 (class 0 OID 0)
+-- TOC entry 3101 (class 0 OID 0)
 -- Dependencies: 207
 -- Name: log_activity_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: akdev
 --
 
-SELECT pg_catalog.setval('public.log_activity_log_id_seq', 22, true);
+SELECT pg_catalog.setval('public.log_activity_log_id_seq', 34, true);
 
 
 --
--- TOC entry 2921 (class 2606 OID 16894)
+-- TOC entry 2928 (class 2606 OID 16894)
 -- Name: detail_activity detail_activity_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -832,16 +901,16 @@ ALTER TABLE ONLY public.detail_activity
 
 
 --
--- TOC entry 2927 (class 2606 OID 17101)
--- Name: status_login detail_status_pk; Type: CONSTRAINT; Schema: public; Owner: akdev
+-- TOC entry 2934 (class 2606 OID 17101)
+-- Name: detail_status detail_status_pk; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
-ALTER TABLE ONLY public.status_login
+ALTER TABLE ONLY public.detail_status
     ADD CONSTRAINT detail_status_pk PRIMARY KEY (status_id);
 
 
 --
--- TOC entry 2923 (class 2606 OID 16972)
+-- TOC entry 2930 (class 2606 OID 16972)
 -- Name: files files_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -850,7 +919,7 @@ ALTER TABLE ONLY public.files
 
 
 --
--- TOC entry 2931 (class 2606 OID 17234)
+-- TOC entry 2938 (class 2606 OID 17234)
 -- Name: log_activity log_activity_pk; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -859,7 +928,7 @@ ALTER TABLE ONLY public.log_activity
 
 
 --
--- TOC entry 2925 (class 2606 OID 17016)
+-- TOC entry 2932 (class 2606 OID 17016)
 -- Name: roles role_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -868,7 +937,16 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- TOC entry 2919 (class 2606 OID 16881)
+-- TOC entry 2940 (class 2606 OID 25465)
+-- Name: detail_trash status_trash_pk; Type: CONSTRAINT; Schema: public; Owner: akdev
+--
+
+ALTER TABLE ONLY public.detail_trash
+    ADD CONSTRAINT status_trash_pk PRIMARY KEY (trash_id);
+
+
+--
+-- TOC entry 2926 (class 2606 OID 16881)
 -- Name: users user_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -877,15 +955,15 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2928 (class 1259 OID 17099)
+-- TOC entry 2935 (class 1259 OID 17099)
 -- Name: detail_status_status_id_uindex; Type: INDEX; Schema: public; Owner: akdev
 --
 
-CREATE UNIQUE INDEX detail_status_status_id_uindex ON public.status_login USING btree (status_id);
+CREATE UNIQUE INDEX detail_status_status_id_uindex ON public.detail_status USING btree (status_id);
 
 
 --
--- TOC entry 2929 (class 1259 OID 17232)
+-- TOC entry 2936 (class 1259 OID 17232)
 -- Name: log_activity_log_id_uindex; Type: INDEX; Schema: public; Owner: akdev
 --
 
@@ -893,7 +971,15 @@ CREATE UNIQUE INDEX log_activity_log_id_uindex ON public.log_activity USING btre
 
 
 --
--- TOC entry 2939 (class 2620 OID 25382)
+-- TOC entry 2941 (class 1259 OID 25463)
+-- Name: status_trash_trash_id_uindex; Type: INDEX; Schema: public; Owner: akdev
+--
+
+CREATE UNIQUE INDEX status_trash_trash_id_uindex ON public.detail_trash USING btree (trash_id);
+
+
+--
+-- TOC entry 2949 (class 2620 OID 25382)
 -- Name: files delete_file; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -901,7 +987,7 @@ CREATE TRIGGER delete_file BEFORE UPDATE ON public.files FOR EACH ROW EXECUTE FU
 
 
 --
--- TOC entry 2940 (class 2620 OID 25386)
+-- TOC entry 2950 (class 2620 OID 25386)
 -- Name: files recovery_trash; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -909,7 +995,7 @@ CREATE TRIGGER recovery_trash BEFORE UPDATE ON public.files FOR EACH ROW EXECUTE
 
 
 --
--- TOC entry 2938 (class 2620 OID 25380)
+-- TOC entry 2948 (class 2620 OID 25380)
 -- Name: files rename_file; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -917,7 +1003,15 @@ CREATE TRIGGER rename_file BEFORE UPDATE ON public.files FOR EACH ROW EXECUTE FU
 
 
 --
--- TOC entry 2941 (class 2620 OID 25388)
+-- TOC entry 2952 (class 2620 OID 25448)
+-- Name: files tambah_used_space; Type: TRIGGER; Schema: public; Owner: akdev
+--
+
+CREATE TRIGGER tambah_used_space AFTER INSERT ON public.files FOR EACH ROW EXECUTE FUNCTION public.tambah_used_space();
+
+
+--
+-- TOC entry 2951 (class 2620 OID 25388)
 -- Name: files upload_file; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -925,7 +1019,7 @@ CREATE TRIGGER upload_file AFTER INSERT ON public.files FOR EACH ROW EXECUTE FUN
 
 
 --
--- TOC entry 2936 (class 2606 OID 17240)
+-- TOC entry 2946 (class 2606 OID 17240)
 -- Name: log_activity fk_detail_activity; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -934,7 +1028,7 @@ ALTER TABLE ONLY public.log_activity
 
 
 --
--- TOC entry 2937 (class 2606 OID 17250)
+-- TOC entry 2947 (class 2606 OID 17250)
 -- Name: log_activity fk_file_id; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -943,7 +1037,7 @@ ALTER TABLE ONLY public.log_activity
 
 
 --
--- TOC entry 2934 (class 2606 OID 17245)
+-- TOC entry 2944 (class 2606 OID 17245)
 -- Name: files fk_owner; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -952,7 +1046,7 @@ ALTER TABLE ONLY public.files
 
 
 --
--- TOC entry 2932 (class 2606 OID 17198)
+-- TOC entry 2942 (class 2606 OID 17198)
 -- Name: users fk_role; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -961,16 +1055,16 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2933 (class 2606 OID 17203)
+-- TOC entry 2943 (class 2606 OID 17203)
 -- Name: users fk_status; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES public.status_login(status_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+    ADD CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES public.detail_status(status_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
 
 
 --
--- TOC entry 2935 (class 2606 OID 17235)
+-- TOC entry 2945 (class 2606 OID 17235)
 -- Name: log_activity fk_username; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -978,7 +1072,7 @@ ALTER TABLE ONLY public.log_activity
     ADD CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES public.users(username) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
 
 
--- Completed on 2021-01-20 21:34:44 WIB
+-- Completed on 2021-01-21 11:28:17 WIB
 
 --
 -- PostgreSQL database dump complete
