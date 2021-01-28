@@ -5,7 +5,7 @@
 -- Dumped from database version 13.1 (Ubuntu 13.1-1.pgdg20.04+1)
 -- Dumped by pg_dump version 13.1 (Ubuntu 13.1-1.pgdg20.04+1)
 
--- Started on 2021-01-28 00:54:30 WIB
+-- Started on 2021-01-29 03:07:12 WIB
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 263 (class 1255 OID 34109)
+-- TOC entry 265 (class 1255 OID 42259)
 -- Name: a_belumdipake_get_log_activity(integer); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -40,9 +40,9 @@ FROM logs la
                FROM logs
                GROUP BY logs.username) t2
               ON la.username::text = t2.username::text AND la.activity_date = t2.activity_date
-         JOIN users u ON u.username::text = la.username::text
-         JOIN detail_activity da ON da.activity_id = la.activity_id
-         JOIN detail_status dl ON u.status_id = dl.status_id
+         RIGHT JOIN users u ON u.username::text = la.username::text
+         LEFT JOIN detail_activity da ON da.activity_id = la.activity_id
+         LEFT JOIN detail_status dl ON u.status_id = dl.status_id
 WHERE u.role_id = 2
     ORDER BY u.name ASC 
 LIMIT 10 OFFSET (in_page-1)*10;    
@@ -53,7 +53,7 @@ $$;
 ALTER FUNCTION public.a_belumdipake_get_log_activity(in_page integer) OWNER TO akdev;
 
 --
--- TOC entry 240 (class 1255 OID 25737)
+-- TOC entry 255 (class 1255 OID 25737)
 -- Name: add_file(character varying, character varying, numeric, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -65,12 +65,6 @@ INSERT INTO items
 (item_name, directory, size, owner, trash_status, type_id)
 VALUES
 (in_file_name, in_directory, in_size, in_owner, 0, 1);
--- IF FOUND THEN
---       RETURN TRUE;
---     ELSE
---       RETURN FALSE;
---     END IF;
-
 END;
 $$;
 
@@ -78,7 +72,7 @@ $$;
 ALTER FUNCTION public.add_file(in_file_name character varying, in_directory character varying, in_size numeric, in_owner character varying) OWNER TO akdev;
 
 --
--- TOC entry 251 (class 1255 OID 25735)
+-- TOC entry 256 (class 1255 OID 25735)
 -- Name: add_folder(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -87,14 +81,9 @@ CREATE FUNCTION public.add_folder(in_folder_name character varying, in_directory
     AS $$
 BEGIN
 INSERT INTO items
-(item_name, directory, owner, trash_status, type_id)
+(item_name, directory, owner, trash_status, type_id, size)
 VALUES
-(in_folder_name, in_directory, in_owner, 0, 2);
--- IF FOUND THEN
---       RETURN TRUE;
---     ELSE
---       RETURN FALSE;
---     END IF;
+(in_folder_name, in_directory, in_owner, 0, 2, 0);
 END;
 $$;
 
@@ -102,7 +91,7 @@ $$;
 ALTER FUNCTION public.add_folder(in_folder_name character varying, in_directory character varying, in_owner character varying) OWNER TO akdev;
 
 --
--- TOC entry 246 (class 1255 OID 25762)
+-- TOC entry 250 (class 1255 OID 25762)
 -- Name: add_used_space(); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -148,7 +137,7 @@ $$;
 ALTER FUNCTION public.add_user(in_username character varying, in_name character varying, in_password character varying, in_phone character varying, in_email character varying, in_space numeric) OWNER TO akdev;
 
 --
--- TOC entry 244 (class 1255 OID 25749)
+-- TOC entry 249 (class 1255 OID 25749)
 -- Name: delete_file(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -165,7 +154,7 @@ $$;
 ALTER FUNCTION public.delete_file(in_file_id integer, in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 233 (class 1255 OID 25787)
+-- TOC entry 242 (class 1255 OID 25787)
 -- Name: delete_folder(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -184,23 +173,54 @@ ALTER FUNCTION public.delete_folder(in_folder_id integer, in_username character 
 
 --
 -- TOC entry 231 (class 1255 OID 25765)
--- Name: delete_trash(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
+-- Name: delete_trash_file(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.delete_trash(in_item_id integer, in_owner character varying) RETURNS void
+CREATE FUNCTION public.delete_trash_file(in_item_id integer, in_owner character varying) RETURNS void
     LANGUAGE plpgsql
     AS $$
 BEGIN
-DELETE FROM items
-WHERE trash_status = 1 AND item_id = in_item_id  AND   owner = in_owner ;
+    DELETE FROM items
+    WHERE trash_status = 1 
+    AND item_id = in_item_id  
+    AND owner = in_owner
+    AND type_id = 1;
 END
 $$;
 
 
-ALTER FUNCTION public.delete_trash(in_item_id integer, in_owner character varying) OWNER TO akdev;
+ALTER FUNCTION public.delete_trash_file(in_item_id integer, in_owner character varying) OWNER TO akdev;
 
 --
--- TOC entry 237 (class 1255 OID 25721)
+-- TOC entry 269 (class 1255 OID 42274)
+-- Name: delete_trash_folder(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
+--
+
+CREATE FUNCTION public.delete_trash_folder(in_item_id integer, in_owner character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    var_item_name varchar;
+BEGIN
+    SELECT INTO var_item_name FROM items
+    WHERE item_id = in_item_id;
+
+--     hapus folder
+    DELETE FROM items
+    WHERE item_id = in_item_id;
+    
+--     hapus item depedenci di dalam folder
+    DELETE FROM items
+    WHERE directory = (SELECT concat(directory, item_name,'/') FROM items WHERE item_id = in_item_id)
+    AND owner = in_owner;
+END
+$$;
+
+
+ALTER FUNCTION public.delete_trash_folder(in_item_id integer, in_owner character varying) OWNER TO akdev;
+
+--
+-- TOC entry 244 (class 1255 OID 25721)
 -- Name: edit_user(character varying, character varying, numeric, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -219,11 +239,60 @@ $$;
 ALTER FUNCTION public.edit_user(in_username character varying, in_name character varying, in_space numeric, in_email character varying) OWNER TO akdev;
 
 --
--- TOC entry 259 (class 1255 OID 34084)
--- Name: get_file_count(character varying); Type: FUNCTION; Schema: public; Owner: akdev
+-- TOC entry 235 (class 1255 OID 42283)
+-- Name: get_all_item_list(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.get_file_count(in_username character varying) RETURNS integer
+CREATE FUNCTION public.get_all_item_list(in_username character varying, in_current_path character varying) RETURNS TABLE(item_name character varying, item_id integer)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY SELECT
+        items.item_name,
+        items.item_id
+    FROM
+        items
+    WHERE
+        items.owner like in_username
+    AND items.trash_status = 0
+    AND directory = in_current_path
+    ORDER BY type_id, item_name ASC;
+END;
+$$;
+
+
+ALTER FUNCTION public.get_all_item_list(in_username character varying, in_current_path character varying) OWNER TO akdev;
+
+--
+-- TOC entry 266 (class 1255 OID 42267)
+-- Name: get_all_trash_list(character varying); Type: FUNCTION; Schema: public; Owner: akdev
+--
+
+CREATE FUNCTION public.get_all_trash_list(in_username character varying) RETURNS TABLE(item_name character varying, item_id integer)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY SELECT
+        items.item_name,
+        items.item_id
+    FROM
+        items
+    WHERE
+        items.owner like in_username
+      AND items.trash_status = 1
+    ORDER BY type_id, item_name ASC;
+END;
+$$;
+
+
+ALTER FUNCTION public.get_all_trash_list(in_username character varying) OWNER TO akdev;
+
+--
+-- TOC entry 237 (class 1255 OID 42285)
+-- Name: get_file_count(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
+--
+
+CREATE FUNCTION public.get_file_count(in_username character varying, in_current_path character varying) RETURNS integer
     LANGUAGE plpgsql
     AS $$
 declare
@@ -234,26 +303,28 @@ begin
    from items
    where owner = in_username
     and type_id = 1
-   and trash_status = 0;
+   and trash_status = 0
+   and directory = in_current_path;
 
    return file_count;
 end;
 $$;
 
 
-ALTER FUNCTION public.get_file_count(in_username character varying) OWNER TO akdev;
+ALTER FUNCTION public.get_file_count(in_username character varying, in_current_path character varying) OWNER TO akdev;
 
 --
--- TOC entry 252 (class 1255 OID 33999)
+-- TOC entry 234 (class 1255 OID 42282)
 -- Name: get_file_list(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.get_file_list(in_username character varying, in_current_path character varying) RETURNS TABLE(item_name character varying)
+CREATE FUNCTION public.get_file_list(in_username character varying, in_current_path character varying) RETURNS TABLE(file_name character varying, file_id integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY SELECT
-        items.item_name
+        items.item_name,
+        items.item_id
     FROM
         items
     WHERE
@@ -269,11 +340,11 @@ $$;
 ALTER FUNCTION public.get_file_list(in_username character varying, in_current_path character varying) OWNER TO akdev;
 
 --
--- TOC entry 260 (class 1255 OID 34085)
--- Name: get_folder_count(character varying); Type: FUNCTION; Schema: public; Owner: akdev
+-- TOC entry 236 (class 1255 OID 42284)
+-- Name: get_folder_count(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.get_folder_count(in_username character varying) RETURNS integer
+CREATE FUNCTION public.get_folder_count(in_username character varying, in_current_path character varying) RETURNS integer
     LANGUAGE plpgsql
     AS $$
 declare
@@ -284,26 +355,28 @@ begin
    from items
    where owner = in_username
     and type_id = 2
-   and trash_status = 0;
+   and trash_status = 0
+   and directory = in_current_path;
 
    return folder_count;
 end;
 $$;
 
 
-ALTER FUNCTION public.get_folder_count(in_username character varying) OWNER TO akdev;
+ALTER FUNCTION public.get_folder_count(in_username character varying, in_current_path character varying) OWNER TO akdev;
 
 --
--- TOC entry 253 (class 1255 OID 34000)
+-- TOC entry 270 (class 1255 OID 42281)
 -- Name: get_folder_list(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.get_folder_list(in_username character varying, in_current_path character varying) RETURNS TABLE(item_name character varying)
+CREATE FUNCTION public.get_folder_list(in_username character varying, in_current_path character varying) RETURNS TABLE(folder_name character varying, folder_id integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY SELECT
-        items.item_name
+        items.item_name,
+        items.item_id
     FROM
         items
     WHERE
@@ -320,7 +393,7 @@ $$;
 ALTER FUNCTION public.get_folder_list(in_username character varying, in_current_path character varying) OWNER TO akdev;
 
 --
--- TOC entry 236 (class 1255 OID 25791)
+-- TOC entry 243 (class 1255 OID 25791)
 -- Name: get_information_storage(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -340,7 +413,23 @@ $$;
 ALTER FUNCTION public.get_information_storage(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 257 (class 1255 OID 34069)
+-- TOC entry 240 (class 1255 OID 42310)
+-- Name: get_item_information(integer); Type: FUNCTION; Schema: public; Owner: akdev
+--
+
+CREATE FUNCTION public.get_item_information(in_item_id integer) RETURNS TABLE(item_name character varying, directory character varying)
+    LANGUAGE plpgsql
+    AS $$
+begin
+   return query select items.item_name, items.directory from items where items.item_id = in_item_id;
+end;
+$$;
+
+
+ALTER FUNCTION public.get_item_information(in_item_id integer) OWNER TO akdev;
+
+--
+-- TOC entry 259 (class 1255 OID 34069)
 -- Name: get_name(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -355,6 +444,32 @@ $$;
 
 
 ALTER FUNCTION public.get_name(in_username character varying) OWNER TO akdev;
+
+--
+-- TOC entry 239 (class 1255 OID 42305)
+-- Name: get_search_file_count(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
+--
+
+CREATE FUNCTION public.get_search_file_count(in_username character varying, in_keyword character varying) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$
+declare
+   file_count integer;
+begin
+   select count(*)
+   into file_count
+   from items
+   where owner = in_username
+    and type_id = 1
+   and trash_status = 0
+   and lower(item_name) like lower('%' || in_keyword || '%');
+
+   return file_count;
+end;
+$$;
+
+
+ALTER FUNCTION public.get_search_file_count(in_username character varying, in_keyword character varying) OWNER TO akdev;
 
 --
 -- TOC entry 262 (class 1255 OID 34087)
@@ -382,16 +497,17 @@ $$;
 ALTER FUNCTION public.get_trash_file_count(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 234 (class 1255 OID 25788)
+-- TOC entry 268 (class 1255 OID 42270)
 -- Name: get_trash_file_list(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.get_trash_file_list(in_username character varying) RETURNS TABLE(file_name character varying)
+CREATE FUNCTION public.get_trash_file_list(in_username character varying) RETURNS TABLE(file_name character varying, file_id integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY SELECT
-        items.item_name
+        items.item_name,
+        items.item_id
     FROM
         items
     WHERE
@@ -431,16 +547,17 @@ $$;
 ALTER FUNCTION public.get_trash_folder_count(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 235 (class 1255 OID 25789)
+-- TOC entry 267 (class 1255 OID 42269)
 -- Name: get_trash_folder_list(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.get_trash_folder_list(in_username character varying) RETURNS TABLE(folder_name character varying)
+CREATE FUNCTION public.get_trash_folder_list(in_username character varying) RETURNS TABLE(folder_name character varying, folder_id integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY SELECT
-        items.item_name
+        items.item_name,
+        items.item_id
     FROM
         items
     WHERE
@@ -455,7 +572,7 @@ $$;
 ALTER FUNCTION public.get_trash_folder_list(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 265 (class 1255 OID 34122)
+-- TOC entry 264 (class 1255 OID 34122)
 -- Name: get_user_log_activity(character varying, integer); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -484,7 +601,7 @@ $$;
 ALTER FUNCTION public.get_user_log_activity(in_username character varying, in_page integer) OWNER TO akdev;
 
 --
--- TOC entry 258 (class 1255 OID 34083)
+-- TOC entry 260 (class 1255 OID 34083)
 -- Name: get_user_log_activity_count(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -531,7 +648,7 @@ $$;
 ALTER FUNCTION public.is_admin(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 254 (class 1255 OID 34005)
+-- TOC entry 257 (class 1255 OID 34005)
 -- Name: is_enough_space(character varying, numeric); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -593,7 +710,7 @@ END; $$;
 ALTER FUNCTION public.is_username_exist(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 241 (class 1255 OID 25741)
+-- TOC entry 247 (class 1255 OID 25741)
 -- Name: log_create_folder(); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -639,7 +756,7 @@ $$;
 ALTER FUNCTION public.log_delete_file() OWNER TO akdev;
 
 --
--- TOC entry 243 (class 1255 OID 25746)
+-- TOC entry 248 (class 1255 OID 25746)
 -- Name: log_delete_folder(); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -687,7 +804,7 @@ $$;
 ALTER FUNCTION public.log_recovery_trash_file() OWNER TO akdev;
 
 --
--- TOC entry 250 (class 1255 OID 25801)
+-- TOC entry 254 (class 1255 OID 25801)
 -- Name: log_recovery_trash_folder(); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -736,7 +853,7 @@ $$;
 ALTER FUNCTION public.log_rename_file() OWNER TO akdev;
 
 --
--- TOC entry 230 (class 1255 OID 25544)
+-- TOC entry 233 (class 1255 OID 25544)
 -- Name: log_rename_folder(); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -747,9 +864,9 @@ BEGIN
  	IF NEW.item_name <> OLD.item_name 
  	    AND OLD.type_id = 2  THEN
  	INSERT INTO logs
- 	(username, activity_id, activity_date, item_name)
+ 	(item_id, username, activity_id, activity_date, item_name)
  	VALUES
- 	(OLD.owner, 3, now(), OLD.directory);
+ 	(OLD.item_id, OLD.owner, 3, now(), OLD.item_name);
  END IF;
  RETURN NEW;
  END;
@@ -772,7 +889,6 @@ BEGIN
  	(item_id, username, activity_id, activity_date, item_name)
  	VALUES
  	(NEW.item_id, NEW.owner, 6, now(), NEW.item_name);
---     UPDATE users set users.used_space = (users.used_space + NEW.size) where users.username = username;
 END IF;
  RETURN NEW;
  END;
@@ -782,7 +898,7 @@ $$;
 ALTER FUNCTION public.log_upload_file() OWNER TO akdev;
 
 --
--- TOC entry 247 (class 1255 OID 25764)
+-- TOC entry 251 (class 1255 OID 25764)
 -- Name: min_used_space(); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -800,7 +916,7 @@ $$;
 ALTER FUNCTION public.min_used_space() OWNER TO akdev;
 
 --
--- TOC entry 248 (class 1255 OID 25799)
+-- TOC entry 252 (class 1255 OID 25799)
 -- Name: recovery_trash_file(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -817,7 +933,7 @@ $$;
 ALTER FUNCTION public.recovery_trash_file(in_file_id integer, in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 249 (class 1255 OID 25800)
+-- TOC entry 253 (class 1255 OID 25800)
 -- Name: recovery_trash_folder(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -834,7 +950,7 @@ $$;
 ALTER FUNCTION public.recovery_trash_folder(in_folder_id integer, in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 242 (class 1255 OID 16951)
+-- TOC entry 241 (class 1255 OID 42314)
 -- Name: rename_file(integer, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -843,7 +959,8 @@ CREATE FUNCTION public.rename_file(id integer, new_name character varying) RETUR
     AS $$
 BEGIN
 UPDATE items SET item_name = new_name
-WHERE item_id = id AND type_id = 1;
+WHERE item_id = id 
+  AND type_id = 1;
 END
 $$;
 
@@ -851,27 +968,37 @@ $$;
 ALTER FUNCTION public.rename_file(id integer, new_name character varying) OWNER TO akdev;
 
 --
--- TOC entry 245 (class 1255 OID 25745)
--- Name: rename_folder(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
+-- TOC entry 230 (class 1255 OID 42275)
+-- Name: rename_folder(integer, character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.rename_folder(in_username character varying, in_item_name character varying, in_new_item_name character varying) RETURNS void
+CREATE FUNCTION public.rename_folder(in_item_id integer, in_new_name character varying, in_owner character varying) RETURNS void
     LANGUAGE plpgsql
     AS $$
+DECLARE
+    var_nama_awal varchar;
+    var_nama_tujuan varchar;
 BEGIN
---     SELECT replace(in_item_name, in_item_name, in_new_item_name) FROM items
-UPDATE items SET item_name = in_new_item_name
-WHERE item_name = in_item_name
-  AND type_id = 2 
-  AND owner = in_username;
+    SELECT directory || item_name INTO var_nama_awal FROM items WHERE item_id = in_item_id;
+    SELECT directory || in_new_name INTO var_nama_tujuan FROM items WHERE item_id = in_item_id;
+
+--     ubah folder
+    UPDATE items SET item_name = in_new_name
+    WHERE item_id = in_item_id
+    AND owner = in_owner;
+    
+--     ubah direktori depedencies
+    UPDATE items SET directory =
+    replace(directory, var_nama_awal, var_nama_tujuan)
+    WHERE owner = in_owner;
 END
 $$;
 
 
-ALTER FUNCTION public.rename_folder(in_username character varying, in_item_name character varying, in_new_item_name character varying) OWNER TO akdev;
+ALTER FUNCTION public.rename_folder(in_item_id integer, in_new_name character varying, in_owner character varying) OWNER TO akdev;
 
 --
--- TOC entry 264 (class 1255 OID 34118)
+-- TOC entry 263 (class 1255 OID 34118)
 -- Name: search_owner(character varying, integer, date, date); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -907,27 +1034,26 @@ $$;
 ALTER FUNCTION public.search_owner(in_name character varying, in_activity_id integer, in_start_date date, in_end_date date) OWNER TO akdev;
 
 --
--- TOC entry 255 (class 1255 OID 34030)
--- Name: search_user_file(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
+-- TOC entry 238 (class 1255 OID 42306)
+-- Name: search_user(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
-CREATE FUNCTION public.search_user_file(in_username character varying, in_keyword character varying) RETURNS TABLE(name character varying)
+CREATE FUNCTION public.search_user(in_username character varying, in_keyword character varying) RETURNS TABLE(name character varying, item_id integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
-    RETURN QUERY SELECT i.item_name FROM items i
+    RETURN QUERY SELECT i.item_name, i.item_id FROM items i
     WHERE lower(i.item_name) like lower('%' || in_keyword || '%') 
     AND i.owner = in_username
-    AND type_id = 1
-    ORDER BY i.item_name;
+    ORDER BY i.type_id,i.item_name;
 END
 $$;
 
 
-ALTER FUNCTION public.search_user_file(in_username character varying, in_keyword character varying) OWNER TO akdev;
+ALTER FUNCTION public.search_user(in_username character varying, in_keyword character varying) OWNER TO akdev;
 
 --
--- TOC entry 256 (class 1255 OID 34031)
+-- TOC entry 258 (class 1255 OID 34031)
 -- Name: search_user_folder(character varying, character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -947,7 +1073,7 @@ $$;
 ALTER FUNCTION public.search_user_folder(in_username character varying, in_keyword character varying) OWNER TO akdev;
 
 --
--- TOC entry 239 (class 1255 OID 25733)
+-- TOC entry 246 (class 1255 OID 25733)
 -- Name: set_offline(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -964,7 +1090,7 @@ $$;
 ALTER FUNCTION public.set_offline(in_username character varying) OWNER TO akdev;
 
 --
--- TOC entry 238 (class 1255 OID 25732)
+-- TOC entry 245 (class 1255 OID 25732)
 -- Name: set_online(character varying); Type: FUNCTION; Schema: public; Owner: akdev
 --
 
@@ -1079,7 +1205,7 @@ CREATE TABLE public.items (
     item_id integer NOT NULL,
     item_name character varying NOT NULL,
     directory character varying NOT NULL,
-    size numeric,
+    size numeric NOT NULL,
     trash_status integer NOT NULL,
     owner character varying NOT NULL,
     type_id integer NOT NULL
@@ -1110,10 +1236,10 @@ ALTER TABLE public.items ALTER COLUMN item_id ADD GENERATED ALWAYS AS IDENTITY (
 
 CREATE TABLE public.logs (
     log_id integer NOT NULL,
-    item_id integer,
-    username character varying,
-    activity_id integer,
-    item_name character varying,
+    item_id integer NOT NULL,
+    username character varying NOT NULL,
+    activity_id integer NOT NULL,
+    item_name character varying NOT NULL,
     activity_date timestamp without time zone NOT NULL
 );
 
@@ -1131,8 +1257,8 @@ CREATE TABLE public.users (
     password character varying,
     phone character varying(15) NOT NULL,
     email character varying(30) NOT NULL,
-    space numeric,
-    used_space numeric,
+    space numeric NOT NULL,
+    used_space numeric NOT NULL,
     role_id integer NOT NULL,
     status_id integer NOT NULL
 );
@@ -1161,8 +1287,7 @@ CREATE VIEW public.get_log_activity AS
      LEFT JOIN public.detail_activity da ON ((da.activity_id = la.activity_id)))
      LEFT JOIN public.detail_status dl ON ((u.status_id = dl.status_id)))
   WHERE (u.role_id = 2)
-  ORDER BY u.name
- LIMIT 5;
+  ORDER BY u.name;
 
 
 ALTER TABLE public.get_log_activity OWNER TO akdev;
@@ -1184,7 +1309,7 @@ CREATE SEQUENCE public.log_activity_log_id_seq
 ALTER TABLE public.log_activity_log_id_seq OWNER TO akdev;
 
 --
--- TOC entry 3094 (class 0 OID 0)
+-- TOC entry 3099 (class 0 OID 0)
 -- Dependencies: 206
 -- Name: log_activity_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: akdev
 --
@@ -1193,7 +1318,7 @@ ALTER SEQUENCE public.log_activity_log_id_seq OWNED BY public.logs.log_id;
 
 
 --
--- TOC entry 2910 (class 2604 OID 17228)
+-- TOC entry 2915 (class 2604 OID 17228)
 -- Name: logs log_id; Type: DEFAULT; Schema: public; Owner: akdev
 --
 
@@ -1201,7 +1326,7 @@ ALTER TABLE ONLY public.logs ALTER COLUMN log_id SET DEFAULT nextval('public.log
 
 
 --
--- TOC entry 3080 (class 0 OID 16887)
+-- TOC entry 3085 (class 0 OID 16887)
 -- Dependencies: 201
 -- Data for Name: detail_activity; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -1220,7 +1345,7 @@ COPY public.detail_activity (activity_id, description) FROM stdin;
 
 
 --
--- TOC entry 3083 (class 0 OID 17009)
+-- TOC entry 3088 (class 0 OID 17009)
 -- Dependencies: 204
 -- Data for Name: detail_role; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -1232,7 +1357,7 @@ COPY public.detail_role (role_id, description) FROM stdin;
 
 
 --
--- TOC entry 3084 (class 0 OID 17093)
+-- TOC entry 3089 (class 0 OID 17093)
 -- Dependencies: 205
 -- Data for Name: detail_status; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -1244,7 +1369,7 @@ COPY public.detail_status (status_id, description) FROM stdin;
 
 
 --
--- TOC entry 3087 (class 0 OID 25457)
+-- TOC entry 3092 (class 0 OID 25457)
 -- Dependencies: 208
 -- Data for Name: detail_trash; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -1256,7 +1381,7 @@ COPY public.detail_trash (trash_id, description) FROM stdin;
 
 
 --
--- TOC entry 3088 (class 0 OID 25546)
+-- TOC entry 3093 (class 0 OID 25546)
 -- Dependencies: 209
 -- Data for Name: detail_type; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -1268,27 +1393,50 @@ COPY public.detail_type (type_id, description) FROM stdin;
 
 
 --
--- TOC entry 3082 (class 0 OID 16965)
+-- TOC entry 3087 (class 0 OID 16965)
 -- Dependencies: 203
 -- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: akdev
 --
 
 COPY public.items (item_id, item_name, directory, size, trash_status, owner, type_id) FROM stdin;
+326	file1	/folder1/	12345	0	t	1
+327	file2	/folder1/BerhasilPliss/	123456	0	t	1
+328	folder3	/folder1/BerhasilPliss/	0	0	t	2
+329	file4	/folder1/BerhasilPliss/folder3/	123241	0	t	1
+324	folder1	/	0	0	t	2
+325	BerhasilPliss	/folder1/	0	0	t	2
+109	aku.kamu.dia.hai.png	/upload/rsf/	0	0	rsf	1
 58	poto.png	/	10000000	0	rsf	1
-126	adi cihuy	test	\N	0	rsf	2
-61	Kuliah	/	\N	0	rsf	2
-128	nah adi	test/	\N	0	rsf	2
+110	aku.kamu.dia.hai.(1)png	/upload/rsf/	0	0	rsf	1
+111	aku.kamu.dia.hai(1).png	/upload/rsf/	0	0	rsf	1
 62	KRS-2020.pdf	/	10000000	0	feals	1
-129	kunnnl	upload/rsf/test/	\N	0	rsf	2
-130	kunnnl	upload//test/	\N	0	rsf	2
 57	KRS.pdf	/	50000000	0	rsf	1
-60	Folder Kuliah	/	\N	0	rsf	2
-67	docdownloader.com-pdf-interchange-4th-edition-level-1-student-book-dd_7a28a628ad8cf3e3021dea88206e9b68.pdf	upload/rsf/test/	18297994	0	rsf	1
-68	favicon1 1.png	upload/rsf/test/	5040	0	rsf	1
+112	aku.kamu.dia.hai(2).png	/upload/rsf/	0	0	rsf	1
+61	Kuliah	/	0	0	rsf	2
+60	Folder Kuliah	/	0	0	rsf	2
+131	kunnnl	/test/	0	0	rsf	2
 69	favicon1 1(1).png	/upload/rsf/test/	5040	0	rsf	1
+72	favicon1 1.png	/upload/rsf/undefined/	5040	0	rsf	1
+113	aku.kamu.png	/upload/rsf/	0	0	rsf	1
+135	magnifying-glass 1.png	/	584	0	rsf	1
+136	magnifying-glass 1(1).png	/	584	0	rsf	1
+122	IMG20201205173857 (1).jpg	/upload/rsf/	4305692	1	rsf	1
+120	main.100092.com.squareenix.lis.obb	/upload/rsf/	1024272323	1	rsf	1
+108	budidoremi(1).mp4	/upload/rsf/	50880571	1	rsf	1
+101	LPJ COMDEV FIX.docx	/upload/rsf/	2412228	1	rsf	1
+87	CamScanner 01-04-2021 14.29.05.pdf	/upload/rsf/	516540	1	rsf	1
+121	Chapter 15 - Integration, Impact, and Future of MSS.pdf	/a/b/berhasiltesting/	410866	0	snk	1
+141	dxwebsetup(1).exe	/a/b/berhasiltesting/	315624	0	snk	1
+132	kunnnl	/test/	0	0	rsf	2
+67	docdownloader.com-pdf-interchange-4th-edition-level-1-student-book-dd_7a28a628ad8cf3e3021dea88206e9b68.pdf	/upload/rsf/test/	18297994	0	rsf	1
+68	favicon1 1.png	/upload/rsf/test/	5040	0	rsf	1
+142	ldplayer_id_2041_ld(1).exe	/a/b/berhasiltesting/	2978488	0	snk	1
+137	woi	/	0	0	rsf	2
+247	aktivitas.odt	/upload ini/	17002	0	rsf	1
+248	KPM_Febyk alek satria.pdf	/upload ini/	453106	0	rsf	1
+250	aktivitas.odt	/upload ini/kedua/	17002	0	rsf	1
 70	IMG20201205173857 (1).jpg	/upload/rsf/test/	4305692	0	rsf	1
 71	WhatsApp Image 2020-12-17 at 14.50.48.jpeg	/upload/rsf/undefined/	38176	0	rsf	1
-72	favicon1 1.png	/upload/rsf/undefined/	5040	0	rsf	1
 73	favicon1 1(2).png	/upload/rsf/test/	5040	0	rsf	1
 74	logo uread.png	/upload/rsf/test/	144484	0	rsf	1
 75	favicon1 1.png	/upload/rsf/null/	5040	0	rsf	1
@@ -1322,37 +1470,198 @@ COPY public.items (item_id, item_name, directory, size, trash_status, owner, typ
 105	LPJ KOMINFO FIX.docx	/upload/rsf/	4608517	0	rsf	1
 106	main.100092.com.squareenix.lis.obb	/upload/rsf/	1024272323	0	rsf	1
 107	budidoremi.mp4	/upload/rsf/	50880571	0	rsf	1
-109	aku.kamu.dia.hai.png	/upload/rsf/	0	0	rsf	1
-110	aku.kamu.dia.hai.(1)png	/upload/rsf/	0	0	rsf	1
-111	aku.kamu.dia.hai(1).png	/upload/rsf/	0	0	rsf	1
-112	aku.kamu.dia.hai(2).png	/upload/rsf/	0	0	rsf	1
-113	aku.kamu.png	/upload/rsf/	0	0	rsf	1
+123	logo uread.png	/upload/rsf/	144484	0	rsf	1
+124	IMG20201205173857 (1)(1).jpg	/upload/rsf/	4305692	0	rsf	1
+125	logo uread(1).png	/upload/rsf/	144484	0	rsf	1
+134	Screenshot_2021-01-11-20-18-31-185_us.zoom.videomeetings.jpg	/	955144	0	rsf	1
+285	kedua	/a/a/b/upload ini/	0	0	rsf	2
+288	upload ini	/a/b/	0	0	rsf	2
+291	kedua	/a/b/upload ini/	0	0	rsf	2
+294	upload ini	/	0	0	rsf	2
+297	kedua	/upload ini/	0	0	rsf	2
+310	upload ini	/	0	0	ema	2
+313	kedua	/upload ini/	0	0	ema	2
+317	berhasil	/a/b/berhasiltesting/	0	0	snk	2
+149	Programs	/a/b/berhasiltesting/	0	0	snk	2
+152	ah	/a/b/berhasiltesting/	0	0	snk	2
+156	Programs	/a/b/berhasiltesting/	0	0	snk	2
+158	Programs	/a/b/berhasiltesting/	0	0	snk	2
+159	Programs	/a/b/berhasiltesting/	0	0	snk	2
+160	Programs	/a/b/berhasiltesting/	0	0	snk	2
+185	ah	/a/b/berhasiltesting/	0	0	snk	2
+187	snk	/a/b/berhasiltesting/	0	0	snk	2
+190	Programs	/a/b/berhasiltesting/	0	0	snk	2
+140	ea	/	0	1	rsf	2
+133	ggsgs	/test/	0	1	rsf	2
+139	gg	/	0	1	rsf	2
+138	ea	/	0	0	rsf	2
+129	kunnnl	/upload/rsf/test/	0	0	rsf	2
+130	kunnnl	/upload/test/	0	0	rsf	2
+128	nah adi	/test/	0	1	rsf	2
 114	aku.kamu(1).png	/upload/rsf/	0	0	rsf	1
 115	aku.kamu(2).png	/upload/rsf/	0	0	rsf	1
 116	aku.kamu. wah.ahw .png	/upload/rsf/	0	0	rsf	1
 117	aku.kamu. wah.ahw (1).png	/upload/rsf/	0	0	rsf	1
 118	aku.kamu. wah.ahw (2).png	/upload/rsf/	0	0	rsf	1
 119	aku.kamu. wah.ahw (3).png	/upload/rsf/	0	0	rsf	1
-121	Chapter 15 - Integration, Impact, and Future of MSS.pdf	/upload/snk/	410866	0	snk	1
-123	logo uread.png	/upload/rsf/	144484	0	rsf	1
-124	IMG20201205173857 (1)(1).jpg	/upload/rsf/	4305692	0	rsf	1
-125	logo uread(1).png	/upload/rsf/	144484	0	rsf	1
-131	kunnnl	/test/	\N	0	rsf	2
-132	kunnnl	/test/	\N	0	rsf	2
-133	ggsgs	/test/	\N	0	rsf	2
-134	Screenshot_2021-01-11-20-18-31-185_us.zoom.videomeetings.jpg	/	955144	0	rsf	1
-135	magnifying-glass 1.png	/	584	0	rsf	1
-136	magnifying-glass 1(1).png	/	584	0	rsf	1
-122	IMG20201205173857 (1).jpg	/upload/rsf/	4305692	1	rsf	1
-120	main.100092.com.squareenix.lis.obb	/upload/rsf/	1024272323	1	rsf	1
-108	budidoremi(1).mp4	/upload/rsf/	50880571	1	rsf	1
-101	LPJ COMDEV FIX.docx	/upload/rsf/	2412228	1	rsf	1
-87	CamScanner 01-04-2021 14.29.05.pdf	/upload/rsf/	516540	1	rsf	1
+126	adi cihuy	/test/	0	1	rsf	2
+241	kedua	/a/upload ini/	0	0	rsf	2
+262	kedua	/a/b/aada/b/upload ini/	0	0	rsf	2
+264	kedua	/a/b/aada/b/upload ini/	0	0	rsf	2
+270	kedua	/a/b/aada/b/upload ini/	0	0	rsf	2
+272	kedua	/a/b/aada/b/upload ini/	0	0	rsf	2
+280	kedua	/a/b/aada/b/upload ini/	0	0	rsf	2
+192	ah	/a/b/berhasiltesting/	0	0	snk	2
+206	snk	/a/b/berhasiltesting/	0	0	snk	2
+209	Programs	/a/b/berhasiltesting/	0	0	snk	2
+211	ah	/a/b/berhasiltesting/	0	0	snk	2
+213	snk	/a/b/berhasiltesting/	0	0	snk	2
+216	Programs	/a/b/berhasiltesting/	0	0	snk	2
+218	ah	/a/b/berhasiltesting/	0	0	snk	2
+220	snk	/a/b/berhasiltesting/	0	0	snk	2
+223	Programs	/a/b/berhasiltesting/	0	0	snk	2
+225	ah	/a/b/berhasiltesting/	0	0	snk	2
+227	Programs	/a/b/berhasiltesting/	0	0	snk	2
+230	ah	/a/b/berhasiltesting/	0	0	snk	2
+232	eh	/a/b/berhasiltesting/	0	0	snk	2
+319	JS1	/	0	0	ema	2
+274	upload ini	/a/b/c/d/a/b/	0	0	rsf	2
+282	upload ini	/c/a/b/	0	0	rsf	2
+266	upload ini	/a/b/g/f/a/b/	0	0	rsf	2
+238	upload ini	/a/	0	0	rsf	2
+268	upload ini	/a/b/f/f/a/b/	0	0	rsf	2
+278	kedua	/a/b/f/f/a/b/upload ini/	0	0	rsf	2
+276	upload ini	/a/b/f/f/a/b/	0	0	rsf	2
+244	KPM_Febyk alek satria.pdf	/b/	453106	0	rsf	1
+260	upload ini	/a/b/f/g/a/b/	0	0	rsf	2
+239	aktivitas.odt	/a/upload ini/	17002	0	rsf	1
+240	KPM_Febyk alek satria.pdf	/a/upload ini/	453106	0	rsf	1
+242	aktivitas.odt	/a/upload ini/kedua/	17002	0	rsf	1
+243	KPM_Febyk alek satria.pdf	/a/upload ini/kedua/	453106	0	rsf	1
+245	KPM_Febyk alek satria(1).pdf	/	453106	0	rsf	1
+251	KPM_Febyk alek satria.pdf	/upload ini/kedua/	453106	0	rsf	1
+253	aktivitas.odt	/a/b/aada/b/upload ini/	17002	0	rsf	1
+254	KPM_Febyk alek satria.pdf	/a/b/aada/b/upload ini/	453106	0	rsf	1
+256	aktivitas.odt	/a/b/aada/b/upload ini/kedua/	17002	0	rsf	1
+257	KPM_Febyk alek satria.pdf	/a/b/aada/b/upload ini/kedua/	453106	0	rsf	1
+259	aktivitas.odt	/a/b/aada/b/upload ini/	17002	0	rsf	1
+261	KPM_Febyk alek satria.pdf	/a/b/aada/b/upload ini/	453106	0	rsf	1
+263	aktivitas.odt	/a/b/aada/b/upload ini/kedua/	17002	0	rsf	1
+265	KPM_Febyk alek satria.pdf	/a/b/aada/b/upload ini/kedua/	453106	0	rsf	1
+267	aktivitas.odt	/a/b/aada/b/upload ini/	17002	0	rsf	1
+269	KPM_Febyk alek satria.pdf	/a/b/aada/b/upload ini/	453106	0	rsf	1
+271	aktivitas.odt	/a/b/aada/b/upload ini/kedua/	17002	0	rsf	1
+273	KPM_Febyk alek satria.pdf	/a/b/aada/b/upload ini/kedua/	453106	0	rsf	1
+275	aktivitas.odt	/a/b/aada/b/upload ini/	17002	0	rsf	1
+277	KPM_Febyk alek satria.pdf	/a/b/aada/b/upload ini/	453106	0	rsf	1
+279	aktivitas.odt	/a/b/aada/b/upload ini/kedua/	17002	0	rsf	1
+281	KPM_Febyk alek satria.pdf	/a/b/aada/b/upload ini/kedua/	453106	0	rsf	1
+283	aktivitas.odt	/a/a/b/upload ini/	17002	0	rsf	1
+284	KPM_Febyk alek satria.pdf	/a/a/b/upload ini/	453106	0	rsf	1
+286	aktivitas.odt	/a/a/b/upload ini/kedua/	17002	0	rsf	1
+287	KPM_Febyk alek satria.pdf	/a/a/b/upload ini/kedua/	453106	0	rsf	1
+289	aktivitas.odt	/a/b/upload ini/	17002	0	rsf	1
+290	KPM_Febyk alek satria.pdf	/a/b/upload ini/	453106	0	rsf	1
+292	aktivitas.odt	/a/b/upload ini/kedua/	17002	0	rsf	1
+293	KPM_Febyk alek satria.pdf	/a/b/upload ini/kedua/	453106	0	rsf	1
+295	aktivitas.odt	/upload ini/	17002	0	rsf	1
+296	KPM_Febyk alek satria.pdf	/upload ini/	453106	0	rsf	1
+298	aktivitas.odt	/upload ini/kedua/	17002	0	rsf	1
+299	KPM_Febyk alek satria.pdf	/upload ini/kedua/	453106	0	rsf	1
+300	aktivitas(1).odt	/upload ini/	17002	0	rsf	1
+301	KPM_Febyk alek satria(1).pdf	/upload ini/	453106	0	rsf	1
+302	aktivitas(1).odt	/upload ini/kedua/	17002	0	rsf	1
+303	KPM_Febyk alek satria(1).pdf	/upload ini/kedua/	453106	0	rsf	1
+305	KPM_Febyk alek satria.pdf	/a/b/	453106	0	rsf	1
+306	aktivitas(2).odt	/upload ini/	17002	0	rsf	1
+307	KPM_Febyk alek satria(2).pdf	/upload ini/	453106	0	rsf	1
+308	aktivitas(2).odt	/upload ini/kedua/	17002	0	rsf	1
+309	KPM_Febyk alek satria(2).pdf	/upload ini/kedua/	453106	0	rsf	1
+311	aktivitas.odt	/upload ini/	17002	0	ema	1
+312	KPM_Febyk alek satria.pdf	/upload ini/	453106	0	ema	1
+314	aktivitas.odt	/upload ini/kedua/	17002	0	ema	1
+315	KPM_Febyk alek satria.pdf	/upload ini/kedua/	453106	0	ema	1
+316	tes.png	/a/b/berhasiltesting/	2131	0	snk	1
+318	oik.jpg	/a/b/berhasiltesting/	123213	0	snk	1
+246	upload ini	/	0	0	rsf	2
+249	kedua	/upload ini/	0	0	rsf	2
+143	Text File(1).txt	/a/b/berhasiltesting/	2	0	snk	1
+150	Programs/dxwebsetup.exe	/a/b/berhasiltesting/	315624	0	snk	1
+151	Programs/ldplayer_id_2041_ld.exe	/a/b/berhasiltesting/	2978488	0	snk	1
+153	Programs/ah/Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+252	upload ini	/a/b/s/d/a/b/	0	0	rsf	2
+258	upload ini	/a/b/s/d/a/b/	0	0	rsf	2
+255	kedua	/a/b/f/f/a/b/upload ini/	0	0	rsf	2
+166	fileKerenSekali.png	/a/b/berhasiltesting/	2112	0	snk	1
+234	dxwebsetup(1).exe	/a/b/berhasiltesting/	315624	0	snk	1
+235	ldplayer_id_2041_ld(1).exe	/a/b/berhasiltesting/	2978488	0	snk	1
+236	Text File(1).txt	/a/b/berhasiltesting/	2	0	snk	1
+169	dxwebsetup(12).exe	/a/b/berhasiltesting/	315624	0	snk	1
+170	ldplayer_id_2041_ld(10).exe	/a/b/berhasiltesting/	2978488	0	snk	1
+171	Text File(10).txt	/a/b/berhasiltesting/	2	0	snk	1
+172	Text File(7).txt	/a/b/berhasiltesting/	2	0	snk	1
+237	Text File(1).txt	/a/b/berhasiltesting/	2	0	snk	1
+174	dxwebsetup.exe	/a/b/berhasiltesting/	315624	0	snk	1
+175	ldplayer_id_2041_ld.exe	/a/b/berhasiltesting/	2978488	0	snk	1
+177	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+179	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+181	dxwebsetup.exe	/a/b/berhasiltesting/	315624	0	snk	1
+182	ldplayer_id_2041_ld.exe	/a/b/berhasiltesting/	2978488	0	snk	1
+184	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+186	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+188	dxwebsetup.exe	/a/b/berhasiltesting/	315624	0	snk	1
+189	ldplayer_id_2041_ld.exe	/a/b/berhasiltesting/	2978488	0	snk	1
+191	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+193	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+194	dxwebsetup(1).exe	/a/b/berhasiltesting/	315624	0	snk	1
+195	ldplayer_id_2041_ld(1).exe	/a/b/berhasiltesting/	2978488	0	snk	1
+196	Text File(1).txt	/a/b/berhasiltesting/	2	0	snk	1
+197	Text File(1).txt	/a/b/berhasiltesting/	2	0	snk	1
+198	dxwebsetup(2).exe	/a/b/berhasiltesting/	315624	0	snk	1
+199	ldplayer_id_2041_ld(2).exe	/a/b/berhasiltesting/	2978488	0	snk	1
+200	Text File(2).txt	/a/b/berhasiltesting/	2	0	snk	1
+201	Text File(2).txt	/a/b/berhasiltesting/	2	0	snk	1
+202	dxwebsetup(3).exe	/a/b/berhasiltesting/	315624	0	snk	1
+203	ldplayer_id_2041_ld(3).exe	/a/b/berhasiltesting/	2978488	0	snk	1
+204	Text File(3).txt	/a/b/berhasiltesting/	2	0	snk	1
+205	Text File(3).txt	/a/b/berhasiltesting/	2	0	snk	1
+207	dxwebsetup.exe	/a/b/berhasiltesting/	315624	0	snk	1
+208	ldplayer_id_2041_ld.exe	/a/b/berhasiltesting/	2978488	0	snk	1
+210	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+212	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+214	dxwebsetup.exe	/a/b/berhasiltesting/	315624	0	snk	1
+215	ldplayer_id_2041_ld.exe	/a/b/berhasiltesting/	2978488	0	snk	1
+217	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+219	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+221	dxwebsetup.exe	/a/b/berhasiltesting/	315624	0	snk	1
+222	ldplayer_id_2041_ld.exe	/a/b/berhasiltesting/	2978488	0	snk	1
+224	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+226	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+228	dxwebsetup.exe	/a/b/berhasiltesting/	315624	0	snk	1
+229	ldplayer_id_2041_ld.exe	/a/b/berhasiltesting/	2978488	0	snk	1
+231	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+233	Text File.txt	/a/b/berhasiltesting/	2	0	snk	1
+320	Beda Level.jpeg	/JS1/	87771	0	ema	1
+321	Super Jago Speaking 1.jpeg	/JS1/	110454	0	ema	1
+322	JS 1- Electronic Book.pdf	/JS1/	26039194	0	ema	1
+323	Silabus JS-1.pdf	/JS1/	231035	0	ema	1
+162	Programs	/a/b/berhasiltesting/	0	0	snk	2
+163	ah	/a/b/berhasiltesting/	0	0	snk	2
+164	eh	/a/b/berhasiltesting/	0	0	snk	2
+165	cobaRenameFile	/a/b/berhasiltesting/	0	0	snk	2
+168	b	/a/b/berhasiltesting/	0	0	snk	2
+167	a	/a/b/berhasiltesting/	0	0	snk	2
+173	Programs	/a/b/berhasiltesting/	0	0	snk	2
+176	ah	/a/b/berhasiltesting/	0	0	snk	2
+178	eh	/a/b/berhasiltesting/	0	0	snk	2
+180	snk	/a/b/berhasiltesting/	0	0	snk	2
+183	Programs	/a/b/berhasiltesting/	0	0	snk	2
+304	KPM_Febyk alek satria(2).pdf	/	453106	0	rsf	1
 \.
 
 
 --
--- TOC entry 3086 (class 0 OID 17225)
+-- TOC entry 3091 (class 0 OID 17225)
 -- Dependencies: 207
 -- Data for Name: logs; Type: TABLE DATA; Schema: public; Owner: akdev
 --
@@ -1444,45 +1753,250 @@ COPY public.logs (log_id, item_id, username, activity_id, item_name, activity_da
 192	108	rsf	7	budidoremi(1).mp4	2021-01-27 12:52:52.448509
 193	101	rsf	7	LPJ COMDEV FIX.docx	2021-01-27 12:53:01.943359
 194	87	rsf	7	CamScanner 01-04-2021 14.29.05.pdf	2021-01-27 12:53:14.801471
+195	126	rsf	4	adi cihuy	2021-01-27 19:04:25.273523
+196	137	rsf	1	woi	2021-01-27 19:05:18.669877
+197	138	rsf	1	ea	2021-01-27 19:05:21.959856
+198	139	rsf	1	gg	2021-01-27 19:05:24.671453
+199	140	rsf	1	ea	2021-01-27 19:05:28.682925
+200	140	rsf	4	ea	2021-01-27 19:07:30.412677
+201	128	rsf	4	nah adi	2021-01-27 19:07:30.412677
+202	133	rsf	4	ggsgs	2021-01-27 19:07:30.412677
+203	139	rsf	4	gg	2021-01-27 19:07:30.412677
+204	138	rsf	4	ea	2021-01-27 19:07:30.412677
+205	138	rsf	5	ea	2021-01-27 20:06:25.291694
+206	141	snk	6	dxwebsetup(1).exe	2021-01-28 16:51:08.502782
+207	142	snk	6	ldplayer_id_2041_ld(1).exe	2021-01-28 16:51:08.535856
+208	143	snk	6	Text File(1).txt	2021-01-28 16:51:08.551777
+209	144	snk	1	Programs	2021-01-28 17:36:21.619791
+210	145	snk	6	Programs/dxwebsetup.exe	2021-01-28 17:36:21.631609
+211	146	snk	6	Programs/ldplayer_id_2041_ld.exe	2021-01-28 17:36:21.644195
+212	147	snk	1	ah	2021-01-28 17:36:21.661153
+213	148	snk	6	Programs/ah/Text File.txt	2021-01-28 17:36:21.665736
+214	149	snk	1	Programs	2021-01-28 17:42:54.195828
+215	150	snk	6	Programs/dxwebsetup.exe	2021-01-28 17:42:54.230121
+216	151	snk	6	Programs/ldplayer_id_2041_ld.exe	2021-01-28 17:42:54.247139
+217	152	snk	1	ah	2021-01-28 17:42:54.275561
+218	153	snk	6	Programs/ah/Text File.txt	2021-01-28 17:42:54.28489
+219	154	snk	1	testHapus	2021-01-28 10:47:16.562421
+220	155	snk	6	testhapusFile	2021-01-28 10:47:16.562421
+221	156	snk	1	Programs	2021-01-28 17:47:24.823146
+222	157	snk	6	testhapusfungsihapus	2021-01-28 10:47:44.148385
+223	158	snk	1	Programs	2021-01-28 17:50:23.899326
+224	159	snk	1	Programs	2021-01-28 17:51:22.897193
+225	160	snk	1	Programs	2021-01-28 17:52:56.912478
+226	161	snk	6	testFileSNK	2021-01-28 10:58:46.065596
+227	162	snk	1	Programs	2021-01-28 18:02:52.848365
+228	163	snk	1	ah	2021-01-28 18:02:53.009075
+229	164	snk	1	eh	2021-01-28 18:07:30.714101
+230	165	snk	1	cobaRenameFile	2021-01-28 11:18:08.48297
+231	166	snk	6	fileKerenSekali.png	2021-01-28 11:20:11.134343
+232	167	snk	1	a	2021-01-28 11:20:11.134343
+233	168	snk	1	b	2021-01-28 11:20:11.134343
+237	169	snk	6	dxwebsetup(12).exe	2021-01-28 18:24:13.33079
+238	170	snk	6	ldplayer_id_2041_ld(10).exe	2021-01-28 18:24:13.34467
+239	171	snk	6	Text File(10).txt	2021-01-28 18:24:13.386146
+240	172	snk	6	Text File(7).txt	2021-01-28 18:24:13.484924
+242	173	snk	1	Programs	2021-01-28 18:25:53.882991
+243	174	snk	6	dxwebsetup.exe	2021-01-28 18:25:53.900456
+244	175	snk	6	ldplayer_id_2041_ld.exe	2021-01-28 18:25:53.910909
+245	176	snk	1	ah	2021-01-28 18:25:53.927176
+246	177	snk	6	Text File.txt	2021-01-28 18:25:53.934676
+247	178	snk	1	eh	2021-01-28 18:25:53.943129
+248	179	snk	6	Text File.txt	2021-01-28 18:25:53.948953
+249	180	snk	1	snk	2021-01-28 18:28:38.871342
+250	181	snk	6	dxwebsetup.exe	2021-01-28 18:28:38.906526
+251	182	snk	6	ldplayer_id_2041_ld.exe	2021-01-28 18:28:38.921576
+252	183	snk	1	Programs	2021-01-28 18:28:38.941192
+253	184	snk	6	Text File.txt	2021-01-28 18:28:38.948949
+254	185	snk	1	ah	2021-01-28 18:28:38.960353
+255	186	snk	6	Text File.txt	2021-01-28 18:28:38.96628
+256	187	snk	1	snk	2021-01-28 18:31:47.44468
+257	188	snk	6	dxwebsetup.exe	2021-01-28 18:31:47.535274
+258	189	snk	6	ldplayer_id_2041_ld.exe	2021-01-28 18:31:47.551461
+259	190	snk	1	Programs	2021-01-28 18:31:47.576015
+260	191	snk	6	Text File.txt	2021-01-28 18:31:47.581725
+261	192	snk	1	ah	2021-01-28 18:31:47.592028
+262	193	snk	6	Text File.txt	2021-01-28 18:31:47.603187
+263	194	snk	6	dxwebsetup(1).exe	2021-01-28 18:33:05.538761
+264	195	snk	6	ldplayer_id_2041_ld(1).exe	2021-01-28 18:33:05.571097
+265	196	snk	6	Text File(1).txt	2021-01-28 18:33:05.587884
+266	197	snk	6	Text File(1).txt	2021-01-28 18:33:05.598256
+267	198	snk	6	dxwebsetup(2).exe	2021-01-28 18:34:51.24173
+268	199	snk	6	ldplayer_id_2041_ld(2).exe	2021-01-28 18:34:51.265935
+269	200	snk	6	Text File(2).txt	2021-01-28 18:34:51.30124
+270	201	snk	6	Text File(2).txt	2021-01-28 18:34:51.356032
+271	202	snk	6	dxwebsetup(3).exe	2021-01-28 18:36:11.38095
+272	203	snk	6	ldplayer_id_2041_ld(3).exe	2021-01-28 18:36:11.395899
+273	204	snk	6	Text File(3).txt	2021-01-28 18:36:11.431034
+274	205	snk	6	Text File(3).txt	2021-01-28 18:36:11.465574
+275	206	snk	1	snk	2021-01-28 18:36:39.79276
+276	207	snk	6	dxwebsetup.exe	2021-01-28 18:36:39.824752
+277	208	snk	6	ldplayer_id_2041_ld.exe	2021-01-28 18:36:39.836445
+278	209	snk	1	Programs	2021-01-28 18:36:39.852951
+279	210	snk	6	Text File.txt	2021-01-28 18:36:39.858534
+280	211	snk	1	ah	2021-01-28 18:36:39.868247
+281	212	snk	6	Text File.txt	2021-01-28 18:36:39.873514
+282	213	snk	1	snk	2021-01-28 18:39:01.801262
+283	214	snk	6	dxwebsetup.exe	2021-01-28 18:39:01.835135
+284	215	snk	6	ldplayer_id_2041_ld.exe	2021-01-28 18:39:01.852795
+285	216	snk	1	Programs	2021-01-28 18:39:01.881475
+286	217	snk	6	Text File.txt	2021-01-28 18:39:01.889497
+287	218	snk	1	ah	2021-01-28 18:39:01.906137
+288	219	snk	6	Text File.txt	2021-01-28 18:39:01.91197
+289	220	snk	1	snk	2021-01-28 18:41:39.138325
+290	221	snk	6	dxwebsetup.exe	2021-01-28 18:41:39.270034
+291	222	snk	6	ldplayer_id_2041_ld.exe	2021-01-28 18:41:39.285596
+292	223	snk	1	Programs	2021-01-28 18:41:39.30914
+293	224	snk	6	Text File.txt	2021-01-28 18:41:39.31566
+294	225	snk	1	ah	2021-01-28 18:41:39.327657
+295	226	snk	6	Text File.txt	2021-01-28 18:41:39.333962
+296	227	snk	1	Programs	2021-01-28 18:43:55.422323
+297	228	snk	6	dxwebsetup.exe	2021-01-28 18:43:55.459172
+298	229	snk	6	ldplayer_id_2041_ld.exe	2021-01-28 18:43:55.475913
+299	230	snk	1	ah	2021-01-28 18:43:55.501413
+300	231	snk	6	Text File.txt	2021-01-28 18:43:55.50844
+301	232	snk	1	eh	2021-01-28 18:43:55.519928
+302	233	snk	6	Text File.txt	2021-01-28 18:43:55.526301
+303	234	snk	6	dxwebsetup(1).exe	2021-01-28 18:44:31.632377
+304	235	snk	6	ldplayer_id_2041_ld(1).exe	2021-01-28 18:44:31.641148
+305	236	snk	6	Text File(1).txt	2021-01-28 18:44:31.662455
+306	237	snk	6	Text File(1).txt	2021-01-28 18:44:31.67239
+307	238	rsf	1	upload ini	2021-01-28 19:13:59.492064
+308	239	rsf	6	aktivitas.odt	2021-01-28 19:13:59.611881
+309	240	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:13:59.639188
+310	241	rsf	1	kedua	2021-01-28 19:13:59.658795
+311	242	rsf	6	aktivitas.odt	2021-01-28 19:13:59.66273
+312	243	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:13:59.670359
+313	244	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:17:19.939253
+314	245	rsf	6	KPM_Febyk alek satria(1).pdf	2021-01-28 19:20:16.979325
+315	246	rsf	1	upload ini	2021-01-28 19:22:22.278006
+316	247	rsf	6	aktivitas.odt	2021-01-28 19:22:22.297994
+317	248	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:22:22.3107
+318	249	rsf	1	kedua	2021-01-28 19:22:22.321409
+319	250	rsf	6	aktivitas.odt	2021-01-28 19:22:22.327577
+320	251	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:22:22.339029
+321	252	rsf	1	upload ini	2021-01-28 19:23:44.584982
+322	253	rsf	6	aktivitas.odt	2021-01-28 19:23:44.590631
+323	254	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:23:44.60084
+324	255	rsf	1	kedua	2021-01-28 19:23:44.61301
+325	256	rsf	6	aktivitas.odt	2021-01-28 19:23:44.619165
+326	257	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:23:44.628047
+327	258	rsf	1	upload ini	2021-01-28 19:26:40.696162
+328	259	rsf	6	aktivitas.odt	2021-01-28 19:26:40.710375
+329	260	rsf	1	upload ini	2021-01-28 19:26:40.724864
+330	261	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:26:40.730985
+331	262	rsf	1	kedua	2021-01-28 19:26:40.74344
+332	263	rsf	6	aktivitas.odt	2021-01-28 19:26:40.749909
+333	264	rsf	1	kedua	2021-01-28 19:26:40.759425
+334	265	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:26:40.76375
+335	266	rsf	1	upload ini	2021-01-28 19:30:01.502754
+336	267	rsf	6	aktivitas.odt	2021-01-28 19:30:01.516705
+337	268	rsf	1	upload ini	2021-01-28 19:30:01.534287
+338	269	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:30:01.54132
+339	270	rsf	1	kedua	2021-01-28 19:30:01.552692
+340	271	rsf	6	aktivitas.odt	2021-01-28 19:30:01.558569
+341	272	rsf	1	kedua	2021-01-28 19:30:01.568346
+342	273	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:30:01.574186
+343	274	rsf	1	upload ini	2021-01-28 19:31:04.442952
+344	275	rsf	6	aktivitas.odt	2021-01-28 19:31:04.458733
+345	276	rsf	1	upload ini	2021-01-28 19:31:04.477157
+346	277	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:31:04.483977
+347	278	rsf	1	kedua	2021-01-28 19:31:04.495543
+348	279	rsf	6	aktivitas.odt	2021-01-28 19:31:04.501813
+349	280	rsf	1	kedua	2021-01-28 19:31:04.512061
+350	281	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:31:04.517488
+351	282	rsf	1	upload ini	2021-01-28 19:41:01.6873
+352	283	rsf	6	aktivitas.odt	2021-01-28 19:41:01.701494
+353	284	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:41:01.717796
+354	285	rsf	1	kedua	2021-01-28 19:41:01.72992
+355	286	rsf	6	aktivitas.odt	2021-01-28 19:41:01.736091
+356	287	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:41:01.748552
+357	288	rsf	1	upload ini	2021-01-28 19:43:25.821144
+358	289	rsf	6	aktivitas.odt	2021-01-28 19:43:25.826704
+359	290	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:43:25.838999
+360	291	rsf	1	kedua	2021-01-28 19:43:25.847503
+361	292	rsf	6	aktivitas.odt	2021-01-28 19:43:25.851502
+362	293	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:43:25.859155
+363	294	rsf	1	upload ini	2021-01-28 19:44:15.511193
+364	295	rsf	6	aktivitas.odt	2021-01-28 19:44:15.515975
+365	296	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:44:15.524497
+366	297	rsf	1	kedua	2021-01-28 19:44:15.534064
+367	298	rsf	6	aktivitas.odt	2021-01-28 19:44:15.539327
+368	299	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:44:15.547241
+369	300	rsf	6	aktivitas(1).odt	2021-01-28 19:45:32.160778
+370	301	rsf	6	KPM_Febyk alek satria(1).pdf	2021-01-28 19:45:32.197841
+371	302	rsf	6	aktivitas(1).odt	2021-01-28 19:45:32.210245
+372	303	rsf	6	KPM_Febyk alek satria(1).pdf	2021-01-28 19:45:32.221166
+373	304	rsf	6	KPM_Febyk alek satria(2).pdf	2021-01-28 19:47:29.515806
+374	305	rsf	6	KPM_Febyk alek satria.pdf	2021-01-28 19:48:05.445783
+375	306	rsf	6	aktivitas(2).odt	2021-01-28 20:13:28.989851
+376	307	rsf	6	KPM_Febyk alek satria(2).pdf	2021-01-28 20:13:29.012994
+377	308	rsf	6	aktivitas(2).odt	2021-01-28 20:13:29.025251
+378	309	rsf	6	KPM_Febyk alek satria(2).pdf	2021-01-28 20:13:29.037511
+379	310	ema	1	upload ini	2021-01-28 20:16:01.167299
+380	311	ema	6	aktivitas.odt	2021-01-28 20:16:01.174657
+381	312	ema	6	KPM_Febyk alek satria.pdf	2021-01-28 20:16:01.188724
+382	313	ema	1	kedua	2021-01-28 20:16:01.198805
+383	314	ema	6	aktivitas.odt	2021-01-28 20:16:01.204663
+384	315	ema	6	KPM_Febyk alek satria.pdf	2021-01-28 20:16:01.213606
+385	316	snk	6	tes.png	2021-01-28 16:23:04.849236
+386	317	snk	1	tesubah	2021-01-28 16:23:04.849236
+387	318	snk	6	oik.jpg	2021-01-28 16:23:04.849236
+394	319	ema	1	JS1	2021-01-28 23:47:12.391038
+395	320	ema	6	Beda Level.jpeg	2021-01-28 23:47:12.403683
+396	321	ema	6	Super Jago Speaking 1.jpeg	2021-01-28 23:47:12.419307
+397	322	ema	6	JS 1- Electronic Book.pdf	2021-01-28 23:47:12.432541
+398	323	ema	6	Silabus JS-1.pdf	2021-01-28 23:47:12.493932
+399	324	t	1	folder1	2021-01-28 17:47:23.649911
+400	325	t	1	folder2	2021-01-28 17:47:23.649911
+401	326	t	6	file1	2021-01-28 17:47:23.649911
+402	327	t	6	file2	2021-01-28 17:47:23.649911
+403	328	t	1	folder3	2021-01-28 17:47:23.649911
+404	329	t	6	file4	2021-01-28 17:48:37.43048
+408	324	t	3	folder a	2021-01-28 17:55:10.744919
+409	325	t	3	folder2	2021-01-28 19:54:26.685744
+410	325	t	3	BerhasilPlis	2021-01-28 19:59:36.770688
 \.
 
 
 --
--- TOC entry 3079 (class 0 OID 16874)
+-- TOC entry 3084 (class 0 OID 16874)
 -- Dependencies: 200
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: akdev
 --
 
 COPY public.users (username, name, password, phone, email, space, used_space, role_id, status_id) FROM stdin;
+admin	Admin Digifile	SEnOpuePqw9Vxa4JAj6dkV_dAPfDp7dAGAYYXiT7O6Q=			0	0	1	1
+akdev	Adi Kurniawan	Hg6xftqVTlEiSTkAEvB3plSfvi1yyZgx29xFDtDQ4fI=	082182751010	adikurniawan.dev@gmail.com	0	0	1	1
 feals	Febyk Alek Satria	9wDhtWXFkumcYECrx-n2KhlUngZthajfq2LFZB0cksE=	081373107544	febykaleksatria@gmail.com	1000000000	10000000	2	0
-snk	Sinka Juliani	NugHLPi0prWTOPQ9Pfq02ZIH5nDAS8_E4LL6IFGNBho=	082182751010	sinka@gmail.com	500000	410866	2	0
+rsf	Roni Starko Firdaus	uN3kUITsovYN__Fkf1JbGp6RogstwVvZqwAvLXgkemk=	0895621854457	rsf.project@gmail.com	10000000000	2922239040	2	1
+t	Akun Test Database	47mKTaMaEn1L3m5DAz9muidMqw636xxw7EFAK_YnPdg=	08080808	t@mail.com	10000000000	259042	2	1
 kalala	Nabila Fitriana	iT4f5Ewe6E_eT1pz4NzxmUN9ZlK3R-PKhvRzmZFwzEQ=	080808080808	kalala@ymail.com	10000000000	0	2	0
-admin	Admin Digifile	SEnOpuePqw9Vxa4JAj6dkV_dAPfDp7dAGAYYXiT7O6Q=			\N	\N	1	1
-akdev	Adi Kurniawan	Hg6xftqVTlEiSTkAEvB3plSfvi1yyZgx29xFDtDQ4fI=	082182751010	adikurniawan.dev@gmail.com	\N	\N	1	1
-rsf	Roni Starko Firdaus	uN3kUITsovYN__Fkf1JbGp6RogstwVvZqwAvLXgkemk=	0895621854457	rsf.project@gmail.com	10000000000	2910084240	2	1
+ema	Ema Hermawati SPd	jBWnY4gtSGIQ3j9R3nOsFZz4tFGiINIGvet_JXiHg2k=	081373107544	ema@gmail.com	10000000000	27408670	2	1
+snk	Sinka Juliani	NugHLPi0prWTOPQ9Pfq02ZIH5nDAS8_E4LL6IFGNBho=	082182751010	sinka@gmail.com	10000000000	277777999	2	1
 \.
 
 
 --
--- TOC entry 3095 (class 0 OID 0)
+-- TOC entry 3100 (class 0 OID 0)
 -- Dependencies: 202
 -- Name: files_file_id_seq; Type: SEQUENCE SET; Schema: public; Owner: akdev
 --
 
-SELECT pg_catalog.setval('public.files_file_id_seq', 136, true);
+SELECT pg_catalog.setval('public.files_file_id_seq', 329, true);
 
 
 --
--- TOC entry 3096 (class 0 OID 0)
+-- TOC entry 3101 (class 0 OID 0)
 -- Dependencies: 206
 -- Name: log_activity_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: akdev
 --
 
-SELECT pg_catalog.setval('public.log_activity_log_id_seq', 194, true);
+SELECT pg_catalog.setval('public.log_activity_log_id_seq', 410, true);
 
 
 --
--- TOC entry 2914 (class 2606 OID 16894)
+-- TOC entry 2919 (class 2606 OID 16894)
 -- Name: detail_activity detail_activity_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1491,7 +2005,7 @@ ALTER TABLE ONLY public.detail_activity
 
 
 --
--- TOC entry 2920 (class 2606 OID 17101)
+-- TOC entry 2925 (class 2606 OID 17101)
 -- Name: detail_status detail_status_pk; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1500,7 +2014,7 @@ ALTER TABLE ONLY public.detail_status
 
 
 --
--- TOC entry 2929 (class 2606 OID 25554)
+-- TOC entry 2934 (class 2606 OID 25554)
 -- Name: detail_type detail_type_pk; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1509,7 +2023,7 @@ ALTER TABLE ONLY public.detail_type
 
 
 --
--- TOC entry 2916 (class 2606 OID 16972)
+-- TOC entry 2921 (class 2606 OID 16972)
 -- Name: items files_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1518,7 +2032,7 @@ ALTER TABLE ONLY public.items
 
 
 --
--- TOC entry 2924 (class 2606 OID 17234)
+-- TOC entry 2929 (class 2606 OID 17234)
 -- Name: logs log_activity_pk; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1527,7 +2041,7 @@ ALTER TABLE ONLY public.logs
 
 
 --
--- TOC entry 2918 (class 2606 OID 17016)
+-- TOC entry 2923 (class 2606 OID 17016)
 -- Name: detail_role role_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1536,7 +2050,7 @@ ALTER TABLE ONLY public.detail_role
 
 
 --
--- TOC entry 2926 (class 2606 OID 25465)
+-- TOC entry 2931 (class 2606 OID 25465)
 -- Name: detail_trash status_trash_pk; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1545,7 +2059,7 @@ ALTER TABLE ONLY public.detail_trash
 
 
 --
--- TOC entry 2912 (class 2606 OID 16881)
+-- TOC entry 2917 (class 2606 OID 16881)
 -- Name: users user_pkey; Type: CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1554,7 +2068,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2921 (class 1259 OID 17099)
+-- TOC entry 2926 (class 1259 OID 17099)
 -- Name: detail_status_status_id_uindex; Type: INDEX; Schema: public; Owner: akdev
 --
 
@@ -1562,7 +2076,7 @@ CREATE UNIQUE INDEX detail_status_status_id_uindex ON public.detail_status USING
 
 
 --
--- TOC entry 2930 (class 1259 OID 25552)
+-- TOC entry 2935 (class 1259 OID 25552)
 -- Name: detail_type_type_id_uindex; Type: INDEX; Schema: public; Owner: akdev
 --
 
@@ -1570,7 +2084,7 @@ CREATE UNIQUE INDEX detail_type_type_id_uindex ON public.detail_type USING btree
 
 
 --
--- TOC entry 2922 (class 1259 OID 17232)
+-- TOC entry 2927 (class 1259 OID 17232)
 -- Name: log_activity_log_id_uindex; Type: INDEX; Schema: public; Owner: akdev
 --
 
@@ -1578,7 +2092,7 @@ CREATE UNIQUE INDEX log_activity_log_id_uindex ON public.logs USING btree (log_i
 
 
 --
--- TOC entry 2927 (class 1259 OID 25463)
+-- TOC entry 2932 (class 1259 OID 25463)
 -- Name: status_trash_trash_id_uindex; Type: INDEX; Schema: public; Owner: akdev
 --
 
@@ -1586,7 +2100,7 @@ CREATE UNIQUE INDEX status_trash_trash_id_uindex ON public.detail_trash USING bt
 
 
 --
--- TOC entry 2944 (class 2620 OID 25763)
+-- TOC entry 2949 (class 2620 OID 25763)
 -- Name: items add_used_space; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1594,7 +2108,7 @@ CREATE TRIGGER add_used_space AFTER INSERT ON public.items FOR EACH ROW EXECUTE 
 
 
 --
--- TOC entry 2942 (class 2620 OID 25742)
+-- TOC entry 2947 (class 2620 OID 25742)
 -- Name: items create_folder; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1602,7 +2116,7 @@ CREATE TRIGGER create_folder AFTER INSERT ON public.items FOR EACH ROW EXECUTE F
 
 
 --
--- TOC entry 2939 (class 2620 OID 25382)
+-- TOC entry 2944 (class 2620 OID 25382)
 -- Name: items delete_file; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1610,7 +2124,7 @@ CREATE TRIGGER delete_file BEFORE UPDATE ON public.items FOR EACH ROW EXECUTE FU
 
 
 --
--- TOC entry 2943 (class 2620 OID 25747)
+-- TOC entry 2948 (class 2620 OID 25747)
 -- Name: items delete_folder; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1618,7 +2132,7 @@ CREATE TRIGGER delete_folder BEFORE UPDATE ON public.items FOR EACH ROW EXECUTE 
 
 
 --
--- TOC entry 2945 (class 2620 OID 25766)
+-- TOC entry 2950 (class 2620 OID 25766)
 -- Name: items min_used_space; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1626,7 +2140,7 @@ CREATE TRIGGER min_used_space BEFORE DELETE ON public.items FOR EACH ROW EXECUTE
 
 
 --
--- TOC entry 2946 (class 2620 OID 25386)
+-- TOC entry 2951 (class 2620 OID 25386)
 -- Name: items recovery_trash_file; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1634,7 +2148,7 @@ CREATE TRIGGER recovery_trash_file BEFORE UPDATE ON public.items FOR EACH ROW EX
 
 
 --
--- TOC entry 2947 (class 2620 OID 25802)
+-- TOC entry 2952 (class 2620 OID 25802)
 -- Name: items recovery_trash_folder; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1642,7 +2156,7 @@ CREATE TRIGGER recovery_trash_folder BEFORE UPDATE ON public.items FOR EACH ROW 
 
 
 --
--- TOC entry 2938 (class 2620 OID 25380)
+-- TOC entry 2943 (class 2620 OID 25380)
 -- Name: items rename_file; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1650,7 +2164,7 @@ CREATE TRIGGER rename_file BEFORE UPDATE ON public.items FOR EACH ROW EXECUTE FU
 
 
 --
--- TOC entry 2941 (class 2620 OID 25545)
+-- TOC entry 2946 (class 2620 OID 25545)
 -- Name: items rename_folder; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1658,7 +2172,7 @@ CREATE TRIGGER rename_folder BEFORE UPDATE ON public.items FOR EACH ROW EXECUTE 
 
 
 --
--- TOC entry 2940 (class 2620 OID 25388)
+-- TOC entry 2945 (class 2620 OID 25388)
 -- Name: items upload_file; Type: TRIGGER; Schema: public; Owner: akdev
 --
 
@@ -1666,7 +2180,7 @@ CREATE TRIGGER upload_file AFTER INSERT ON public.items FOR EACH ROW EXECUTE FUN
 
 
 --
--- TOC entry 2937 (class 2606 OID 17240)
+-- TOC entry 2942 (class 2606 OID 17240)
 -- Name: logs fk_detail_activity; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1675,7 +2189,7 @@ ALTER TABLE ONLY public.logs
 
 
 --
--- TOC entry 2933 (class 2606 OID 17245)
+-- TOC entry 2938 (class 2606 OID 17245)
 -- Name: items fk_owner; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1684,7 +2198,7 @@ ALTER TABLE ONLY public.items
 
 
 --
--- TOC entry 2931 (class 2606 OID 17198)
+-- TOC entry 2936 (class 2606 OID 17198)
 -- Name: users fk_role; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1693,7 +2207,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2932 (class 2606 OID 17203)
+-- TOC entry 2937 (class 2606 OID 17203)
 -- Name: users fk_status; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1702,7 +2216,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 2934 (class 2606 OID 25531)
+-- TOC entry 2939 (class 2606 OID 25531)
 -- Name: items fk_trash_status; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1711,7 +2225,7 @@ ALTER TABLE ONLY public.items
 
 
 --
--- TOC entry 2935 (class 2606 OID 25569)
+-- TOC entry 2940 (class 2606 OID 25569)
 -- Name: items fk_type_id; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1720,7 +2234,7 @@ ALTER TABLE ONLY public.items
 
 
 --
--- TOC entry 2936 (class 2606 OID 17235)
+-- TOC entry 2941 (class 2606 OID 17235)
 -- Name: logs fk_username; Type: FK CONSTRAINT; Schema: public; Owner: akdev
 --
 
@@ -1728,7 +2242,7 @@ ALTER TABLE ONLY public.logs
     ADD CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES public.users(username) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
 
 
--- Completed on 2021-01-28 00:54:30 WIB
+-- Completed on 2021-01-29 03:07:13 WIB
 
 --
 -- PostgreSQL database dump complete
