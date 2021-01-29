@@ -1065,7 +1065,7 @@ func Delete_folder(c echo.Context) error {
 func Delete_file(c echo.Context) error {
 	var model entity.Delete_file
 	c.Bind(&model)
-	syn := "select delete_file('" + strconv.Itoa(model.File_id) + "','" + model.Username + "');"
+	syn := "select delete_file('" + model.File_id + "','" + model.Username + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	res := responsegraph.Data{
 		Status:  constant.StatusSuccess,
@@ -1118,7 +1118,7 @@ func Delete_trash(c echo.Context) error {
 func Recovery_trash_file(c echo.Context) error {
 	var model entity.Delete_file
 	c.Bind(&model)
-	syn := "select recovery_trash_file('" + strconv.Itoa(model.File_id) + "','" + model.Username + "');"
+	syn := "select recovery_trash_file('" + model.File_id + "','" + model.Username + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	res := responsegraph.Data{
 		Status:  constant.StatusSuccess,
@@ -1287,6 +1287,30 @@ func Get_all_trash_list(c echo.Context) error {
 		File:     count_file,
 		Ekstensi: extension,
 		Id:       item_id,
+	}
+	return c.JSON(http.StatusOK, res)
+}
+
+func Get_user_information(c echo.Context) error {
+	var model entity.Users
+	c.Bind(&model)
+	syn := "select * from get_user_information('" + model.Username + "');"
+	hasil, err := db.Query(context.Background(), syn)
+	if err != nil {
+		utils.LogError(err)
+	}
+	for hasil.Next() {
+		if err := hasil.Scan(&model.Username, &model.Name, &model.Space, &model.Email); err != nil {
+			utils.LogError(err)
+		}
+	}
+	res := responsegraph.Userinformation{
+		Status:   constant.StatusSuccess,
+		Message:  "Berhasil select data",
+		Username: model.Username,
+		Name:     model.Name,
+		Space:    model.Space,
+		Email:    model.Email,
 	}
 	return c.JSON(http.StatusOK, res)
 }

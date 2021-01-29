@@ -58,6 +58,15 @@ type Items struct {
 	Id       []int    `json:"id"`
 }
 
+type Userinformation struct {
+	Status   string `json:"status"`
+	Message  string `json:"message"`
+	Username string `json:"Username"`
+	Name     string `json:"Name"`
+	Space    int    `json:"Space"`
+	Email    string `json:"Email"`
+}
+
 type Name struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`

@@ -72,7 +72,7 @@ type (
 		Email    string `json:"email"`
 	}
 	Delete_file struct {
-		File_id  int    `json:"file_id"`
+		File_id  string `json:"file_id"`
 		Username string `json:"username"`
 	}
 	Delete_folder struct {

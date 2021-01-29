@@ -1083,3 +1083,20 @@
 {"file":"example.go:1238","level":"error","msg":"open upload/rsf//upload ini/Screenshot_2021-01-11-20-18-31-185_us.zoom.videomeetings.jpg: no such file or directory","time":"2021-01-29T17:12:58+07:00"}
 {"file":"example.go:1238","level":"error","msg":"open upload/rsf//upload ini/poto.png: no such file or directory","time":"2021-01-29T17:12:58+07:00"}
 {"file":"example.go:1238","level":"error","msg":"open upload/rsf//upload ini/magnifying-glass 1.png: no such file or directory","time":"2021-01-29T17:12:58+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"ema\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:23:46+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"ema\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:25:12+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"feals\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:25:14+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"rsf\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:25:15+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"kalala\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:25:17+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"rsf\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:25:21+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"feals\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:25:22+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"ema\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:25:24+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"kalala\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:25:25+07:00"}
+{"file":"example.go:1300","level":"error","msg":"ERROR: column \"feals\" does not exist (SQLSTATE 42703)","time":"2021-01-29T20:25:31+07:00"}
+{"file":"example.go:1068","level":"info","msg":"ini file id : 0","time":"2021-01-29T21:43:47+07:00"}
+{"file":"example.go:1069","level":"info","msg":"ini username : rsf","time":"2021-01-29T21:43:47+07:00"}
+{"file":"example.go:1068","level":"info","msg":"ini file id : 134","time":"2021-01-29T21:46:42+07:00"}
+{"file":"example.go:1069","level":"info","msg":"ini username : rsf","time":"2021-01-29T21:46:42+07:00"}
+{"file":"example.go:1131","level":"error","msg":"ERROR: invalid input syntax for type integer: \"null\" (SQLSTATE 22P02)","time":"2021-01-29T21:51:21+07:00"}
+{"file":"example.go:1131","level":"error","msg":"ERROR: invalid input syntax for type integer: \"null\" (SQLSTATE 22P02)","time":"2021-01-29T22:21:20+07:00"}
+{"file":"example.go:1131","level":"error","msg":"ERROR: invalid input syntax for type integer: \"null\" (SQLSTATE 22P02)","time":"2021-01-29T22:41:29+07:00"}

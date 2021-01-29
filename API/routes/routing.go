@@ -44,6 +44,7 @@ func (Routing Routing) GetRoutes() *echo.Echo {
 	e.GET("get_log_activity/", controller.Get_log_activity)               //owner
 	e.GET("get_user_log_activity/", controller.Get_user_log_activity)     //owner
 	e.GET("get_information_storage/", controller.Get_information_storage) //user
+	e.GET("get_user_information/", controller.Get_user_information)       //owner
 	// e.GET("is_admin/", controller.Is_admin)                   //fix
 	// e.GET("is_user/", controller.Is_user)                     //fix
 	// e.GET("is_username_exist/", controller.Is_username_exist) //fix
