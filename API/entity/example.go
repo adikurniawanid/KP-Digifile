@@ -76,22 +76,22 @@ type (
 		Username string `json:"username"`
 	}
 	Delete_folder struct {
-		Folder_id int    `json:"folder_id"`
+		Folder_id string `json:"folder_id"`
 		Username  string `json:"username"`
 	}
 	Delete_trash struct {
 		Owner   string `json:"owner"`
-		File_id int    `json:"file_id"`
+		File_id string `json:"file_id"`
 	}
 	Rename_file struct {
-		Id       int    `json:"id"`
+		Id       string `json:"id"`
 		New_name string `json:"new_name"`
 		Username string `json:"username"`
 	}
 	Rename_folder struct {
 		Username      string `json:"username"`
 		New_item_name string `json:"new_item_name"`
-		Id            int    `json:"id"`
+		Id            string `json:"id"`
 	}
 	Search struct {
 		Name        string `json:"name"`

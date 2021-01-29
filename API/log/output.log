@@ -1100,3 +1100,235 @@
 {"file":"example.go:1131","level":"error","msg":"ERROR: invalid input syntax for type integer: \"null\" (SQLSTATE 22P02)","time":"2021-01-29T21:51:21+07:00"}
 {"file":"example.go:1131","level":"error","msg":"ERROR: invalid input syntax for type integer: \"null\" (SQLSTATE 22P02)","time":"2021-01-29T22:21:20+07:00"}
 {"file":"example.go:1131","level":"error","msg":"ERROR: invalid input syntax for type integer: \"null\" (SQLSTATE 22P02)","time":"2021-01-29T22:41:29+07:00"}
+{"file":"example.go:1238","level":"error","msg":"open upload/rsf///Beda Level(1).jpeg: no such file or directory","time":"2021-01-29T23:28:44+07:00"}
+{"file":"example.go:1238","level":"error","msg":"open upload/rsf///Beda Level.jpeg: no such file or directory","time":"2021-01-29T23:28:44+07:00"}
+{"file":"example.go:185","level":"info","msg":"rsf","time":"2021-01-30T00:30:10+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/rsf/Kuliah/logo uread.png: no such file or directory","time":"2021-01-30T00:30:10+07:00"}
+{"file":"example.go:185","level":"info","msg":"rsf","time":"2021-01-30T00:31:04+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/rsf/Kuliah/favicon1 1.png: no such file or directory","time":"2021-01-30T00:31:04+07:00"}
+{"file":"example.go:185","level":"info","msg":"test","time":"2021-01-30T00:36:44+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/null/: no such file or directory","time":"2021-01-30T00:36:44+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/null/coba.jpg: no such file or directory","time":"2021-01-30T00:36:44+07:00"}
+{"file":"example.go:176","level":"info","msg":"ini test : /null/","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:186","level":"info","msg":"test","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/null/: no such file or directory","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/null/docdownloader.com-pdf-interchange-4th-edition-level-1-student-book-dd_7a28a628ad8cf3e3021dea88206e9b68.pdf: no such file or directory","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:176","level":"info","msg":"ini test : /null/","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:186","level":"info","msg":"test","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:198","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:203","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:176","level":"info","msg":"ini test : /null/","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:186","level":"info","msg":"test","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:198","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:203","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:176","level":"info","msg":"ini test : /null/","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:186","level":"info","msg":"test","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:198","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:203","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:176","level":"info","msg":"ini test : /null/","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:186","level":"info","msg":"test","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:198","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:203","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T00:41:44+07:00"}
+{"file":"example.go:176","level":"info","msg":"ini test : /null/","time":"2021-01-30T00:42:17+07:00"}
+{"file":"example.go:186","level":"info","msg":"test","time":"2021-01-30T00:42:17+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/null/docdownloader.com-pdf-interchange-4th-edition-level-1-student-book-dd_7a28a628ad8cf3e3021dea88206e9b68(1).pdf: no such file or directory","time":"2021-01-30T00:42:17+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/null: no such file or directory","time":"2021-01-30T00:43:12+07:00"}
+{"file":"example.go:169","level":"info","msg":"ini test path : null","time":"2021-01-30T00:43:50+07:00"}
+{"file":"example.go:177","level":"info","msg":"ini test : /null/","time":"2021-01-30T00:43:50+07:00"}
+{"file":"example.go:187","level":"info","msg":"test","time":"2021-01-30T00:43:50+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/null/: no such file or directory","time":"2021-01-30T00:43:50+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/null/docdownloader.com-pdf-interchange-4th-edition-level-1-student-book-dd_7a28a628ad8cf3e3021dea88206e9b68.pdf: no such file or directory","time":"2021-01-30T00:43:50+07:00"}
+{"file":"example.go:169","level":"info","msg":"ini test path : null","time":"2021-01-30T00:43:56+07:00"}
+{"file":"example.go:177","level":"info","msg":"ini test : /null/","time":"2021-01-30T00:43:56+07:00"}
+{"file":"example.go:187","level":"info","msg":"test","time":"2021-01-30T00:43:56+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/null/docdownloader.com-pdf-interchange-4th-edition-level-1-student-book-dd_7a28a628ad8cf3e3021dea88206e9b68(1).pdf: no such file or directory","time":"2021-01-30T00:43:56+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/null/kisanak: no such file or directory","time":"2021-01-30T00:45:51+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/kisanak: no such file or directory","time":"2021-01-30T00:47:15+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/kisanak/ungu: no such file or directory","time":"2021-01-30T00:47:37+07:00"}
+{"file":"example.go:185","level":"info","msg":"test","time":"2021-01-30T00:48:32+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/coba.jpg: no such file or directory","time":"2021-01-30T00:48:32+07:00"}
+{"file":"example.go:185","level":"info","msg":"test","time":"2021-01-30T00:49:37+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/kisanak/: no such file or directory","time":"2021-01-30T00:49:37+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/kisanak/Chapter 15 - Integration, Impact, and Future of MSS.pdf: no such file or directory","time":"2021-01-30T00:49:37+07:00"}
+{"file":"example.go:185","level":"info","msg":"test","time":"2021-01-30T00:50:26+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/kisanak/Chapter 15 - Integration, Impact, and Future of MSS(1).pdf: no such file or directory","time":"2021-01-30T00:50:26+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/kisanak/dsads: no such file or directory","time":"2021-01-30T00:51:28+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/kisanak/woik: no such file or directory","time":"2021-01-30T00:52:28+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/kisanak 2: no such file or directory","time":"2021-01-30T00:52:57+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/kisanak 2/anak kisanak: no such file or directory","time":"2021-01-30T00:53:32+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/kisanak 2/kisanak kisanak: no such file or directory","time":"2021-01-30T00:54:18+07:00"}
+{"file":"example.go:1271","level":"error","msg":"open upload/test//kisanak 2/coba.jpg: no such file or directory","time":"2021-01-30T00:55:37+07:00"}
+{"file":"example.go:275","level":"info","msg":"test","time":"2021-01-30T00:56:51+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/aktivitas.odt: no such file or directory","time":"2021-01-30T00:56:51+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/upload ini/: no such file or directory","time":"2021-01-30T00:56:51+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/KPM_Febyk alek satria.pdf: no such file or directory","time":"2021-01-30T00:56:51+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/aktivitas.odt: no such file or directory","time":"2021-01-30T00:56:51+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/upload ini/kedua/: no such file or directory","time":"2021-01-30T00:56:51+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/KPM_Febyk alek satria.pdf: no such file or directory","time":"2021-01-30T00:56:51+07:00"}
+{"file":"example.go:275","level":"info","msg":"test","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/Wallpapers/wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/upload ini/kedua/Wallpapers/: no such file or directory","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/Wallpapers/mikael-gustafsson-wallpaper-mikael-gustafsson.jpg: no such file or directory","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/Wallpapers/n4.png: no such file or directory","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/Wallpapers/62436108_10155899187370670_7258125010865225728_o.jpg: no such file or directory","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/Wallpapers/mikael-gustafsson-amongtrees-2-8.jpg: no such file or directory","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/Wallpapers/wallhaven-ym56zg_1920x1080.png: no such file or directory","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/Wallpapers/1wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/kedua/Wallpapers/star.png: no such file or directory","time":"2021-01-30T00:58:20+07:00"}
+{"file":"example.go:1271","level":"error","msg":"open upload/test//upload ini/kedua/1wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T00:58:31+07:00"}
+{"file":"example.go:1271","level":"error","msg":"open upload/test//upload ini/kedua/62436108_10155899187370670_7258125010865225728_o.jpg: no such file or directory","time":"2021-01-30T00:58:31+07:00"}
+{"file":"example.go:1271","level":"error","msg":"open upload/test//upload ini/kedua/mikael-gustafsson-amongtrees-2-8.jpg: no such file or directory","time":"2021-01-30T00:58:31+07:00"}
+{"file":"example.go:1271","level":"error","msg":"open upload/test//upload ini/kedua/mikael-gustafsson-wallpaper-mikael-gustafsson.jpg: no such file or directory","time":"2021-01-30T00:58:31+07:00"}
+{"file":"example.go:1271","level":"error","msg":"open upload/test//upload ini/kedua/n4.png: no such file or directory","time":"2021-01-30T00:58:31+07:00"}
+{"file":"example.go:1271","level":"error","msg":"open upload/test//upload ini/kedua/star.png: no such file or directory","time":"2021-01-30T00:58:31+07:00"}
+{"file":"example.go:1271","level":"error","msg":"open upload/test//upload ini/kedua/wallhaven-ym56zg_1920x1080.png: no such file or directory","time":"2021-01-30T00:58:31+07:00"}
+{"file":"example.go:1271","level":"error","msg":"open upload/test//upload ini/kedua/wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T00:58:31+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 374","time":"2021-01-30T01:03:22+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : ","time":"2021-01-30T01:03:22+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 374","time":"2021-01-30T01:04:35+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : ","time":"2021-01-30T01:04:35+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 374","time":"2021-01-30T01:05:00+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : ","time":"2021-01-30T01:05:00+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 374","time":"2021-01-30T01:05:58+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:05:58+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : ","time":"2021-01-30T01:20:51+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:20:51+07:00"}
+{"file":"example.go:1093","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:20:51+07:00"}
+{"file":"example.go:1110","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:20:51+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : ","time":"2021-01-30T01:30:52+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:30:52+07:00"}
+{"file":"example.go:1093","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:30:52+07:00"}
+{"file":"example.go:1110","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:30:52+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : ","time":"2021-01-30T01:31:42+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:31:42+07:00"}
+{"file":"example.go:1093","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:31:42+07:00"}
+{"file":"example.go:1110","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:31:42+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : ","time":"2021-01-30T01:36:07+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:36:07+07:00"}
+{"file":"example.go:1093","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:36:08+07:00"}
+{"file":"example.go:1110","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:36:08+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : ","time":"2021-01-30T01:37:24+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:37:24+07:00"}
+{"file":"example.go:1093","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:37:24+07:00"}
+{"file":"example.go:1110","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:37:24+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 375","time":"2021-01-30T01:38:35+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:38:35+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 373","time":"2021-01-30T01:41:58+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:41:58+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 373","time":"2021-01-30T01:42:02+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:42:02+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 375","time":"2021-01-30T01:42:09+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:42:09+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 375","time":"2021-01-30T01:42:33+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:42:33+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 375","time":"2021-01-30T01:43:03+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:43:03+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 388","time":"2021-01-30T01:46:28+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T01:46:28+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/rsf///KRS.pdf: no such file or directory","time":"2021-01-30T01:53:58+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/rsf///KRS.pdf: no such file or directory","time":"2021-01-30T01:54:00+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/rsf///KRS.pdf: no such file or directory","time":"2021-01-30T01:54:05+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/ema///Beda Level.jpeg: no such file or directory","time":"2021-01-30T01:54:43+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 320","time":"2021-01-30T01:55:33+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : ema","time":"2021-01-30T01:55:33+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/ema//JS1/JS1/Super Jago Speaking 1.jpeg: no such file or directory","time":"2021-01-30T01:55:47+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/ema//JS1/JS1/Super Jago Speaking 1.jpeg: no such file or directory","time":"2021-01-30T01:55:53+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/ema//JS1/JS1/Super Jago Speaking 1.jpeg: no such file or directory","time":"2021-01-30T01:55:54+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/ema/JS1/febyk 4x6.jpg: no such file or directory","time":"2021-01-30T01:59:00+07:00"}
+{"file":"example.go:1077","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T01:59:11+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/gege/Wallpapers/1wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:05:55+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/gege/Wallpapers/62436108_10155899187370670_7258125010865225728_o.jpg: no such file or directory","time":"2021-01-30T02:05:55+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/gege/Wallpapers/mikael-gustafsson-amongtrees-2-8.jpg: no such file or directory","time":"2021-01-30T02:05:55+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/gege/Wallpapers/mikael-gustafsson-wallpaper-mikael-gustafsson.jpg: no such file or directory","time":"2021-01-30T02:05:55+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/gege/Wallpapers/n4.png: no such file or directory","time":"2021-01-30T02:05:55+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/gege/Wallpapers/star.png: no such file or directory","time":"2021-01-30T02:05:55+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/gege/Wallpapers/wallhaven-ym56zg_1920x1080.png: no such file or directory","time":"2021-01-30T02:05:55+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/gege/Wallpapers/wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:05:55+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/rsf/folder ku/febyk 4x6.jpg: no such file or directory","time":"2021-01-30T02:12:53+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/rsf/folder ku/roni/febyk 4x6.jpg: no such file or directory","time":"2021-01-30T02:14:50+07:00"}
+{"file":"example.go:275","level":"info","msg":"test","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/upload ini/: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/upload ini/Wallpapers/: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/mikael-gustafsson-wallpaper-mikael-gustafsson.jpg: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/n4.png: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/62436108_10155899187370670_7258125010865225728_o.jpg: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/mikael-gustafsson-amongtrees-2-8.jpg: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/wallhaven-ym56zg_1920x1080.png: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/1wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/star.png: no such file or directory","time":"2021-01-30T02:15:07+07:00"}
+{"file":"example.go:275","level":"info","msg":"test","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/: no such file or directory","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/mikael-gustafsson-wallpaper-mikael-gustafsson.jpg: no such file or directory","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/n4.png: no such file or directory","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/62436108_10155899187370670_7258125010865225728_o.jpg: no such file or directory","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/mikael-gustafsson-amongtrees-2-8.jpg: no such file or directory","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/wallhaven-ym56zg_1920x1080.png: no such file or directory","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/1wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/star.png: no such file or directory","time":"2021-01-30T02:15:57+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 411","time":"2021-01-30T02:16:59+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T02:16:59+07:00"}
+{"file":"example.go:275","level":"info","msg":"test","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/: no such file or directory","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/mikael-gustafsson-wallpaper-mikael-gustafsson.jpg: no such file or directory","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/n4.png: no such file or directory","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/62436108_10155899187370670_7258125010865225728_o.jpg: no such file or directory","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/mikael-gustafsson-amongtrees-2-8.jpg: no such file or directory","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/wallhaven-ym56zg_1920x1080.png: no such file or directory","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/1wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/Wallpapers/star.png: no such file or directory","time":"2021-01-30T02:18:39+07:00"}
+{"file":"example.go:275","level":"info","msg":"test","time":"2021-01-30T02:22:04+07:00"}
+{"file":"example.go:287","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T02:22:04+07:00"}
+{"file":"example.go:292","level":"error","msg":"multipart: NextPart: EOF","time":"2021-01-30T02:22:04+07:00"}
+{"file":"example.go:275","level":"info","msg":"test","time":"2021-01-30T02:22:51+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/ERD/ActivityDiagram.jpg: no such file or directory","time":"2021-01-30T02:22:51+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/test/upload ini/Wallpapers/ERD/: no such file or directory","time":"2021-01-30T02:22:51+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/ERD/ClassDiagram.jpg: no such file or directory","time":"2021-01-30T02:22:51+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/ERD/Usecase.jpg: no such file or directory","time":"2021-01-30T02:22:51+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/ERD/UserFlow.jpg: no such file or directory","time":"2021-01-30T02:22:51+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 429","time":"2021-01-30T02:24:09+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T02:24:09+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : 429","time":"2021-01-30T02:26:33+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T02:26:33+07:00"}
+{"file":"example.go:1088","level":"info","msg":"id : ","time":"2021-01-30T02:27:45+07:00"}
+{"file":"example.go:1089","level":"info","msg":"username : test","time":"2021-01-30T02:27:45+07:00"}
+{"file":"example.go:1093","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T02:27:45+07:00"}
+{"file":"example.go:1110","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T02:27:45+07:00"}
+{"file":"example.go:1089","level":"info","msg":"id : ","time":"2021-01-30T02:28:48+07:00"}
+{"file":"example.go:1090","level":"info","msg":"username : test","time":"2021-01-30T02:28:48+07:00"}
+{"file":"example.go:1094","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T02:28:48+07:00"}
+{"file":"example.go:1111","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T02:28:48+07:00"}
+{"file":"example.go:1125","level":"info","msg":"ini id : 429","time":"2021-01-30T02:30:35+07:00"}
+{"file":"example.go:1126","level":"info","msg":"ini user : test","time":"2021-01-30T02:30:35+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/ema///Super Jago Speaking 1.jpeg: no such file or directory","time":"2021-01-30T02:31:47+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/1wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:35:57+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/mikael-gustafsson-amongtrees-2-8.jpg: no such file or directory","time":"2021-01-30T02:35:57+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/62436108_10155899187370670_7258125010865225728_o.jpg: no such file or directory","time":"2021-01-30T02:35:57+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/mikael-gustafsson-wallpaper-mikael-gustafsson.jpg: no such file or directory","time":"2021-01-30T02:35:57+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/n4.png: no such file or directory","time":"2021-01-30T02:35:57+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/star.png: no such file or directory","time":"2021-01-30T02:35:57+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/wallhaven-ym56zg_1920x1080.png: no such file or directory","time":"2021-01-30T02:35:57+07:00"}
+{"file":"example.go:1275","level":"error","msg":"open upload/test//upload ini/wallpaperflare.com_wallpaper.jpg: no such file or directory","time":"2021-01-30T02:35:57+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/daming kelar.pdf: no such file or directory","time":"2021-01-30T02:37:58+07:00"}
+{"file":"example.go:129","level":"error","msg":"rename upload//upload ini/Wallpapers/mikael-gustafsson-amongtrees-2-8.jpg upload//upload ini/Wallpapers/bisanih: no such file or directory","time":"2021-01-30T02:40:25+07:00"}
+{"file":"example.go:1198","level":"info","msg":"ini id : 434","time":"2021-01-30T02:44:38+07:00"}
+{"file":"example.go:1199","level":"info","msg":"ini New name : aku coba","time":"2021-01-30T02:44:38+07:00"}
+{"file":"example.go:129","level":"error","msg":"rename upload//upload ini/Wallpapers/daming kelar.pdf upload//upload ini/Wallpapers/aku coba: no such file or directory","time":"2021-01-30T02:44:38+07:00"}
+{"file":"example.go:1198","level":"info","msg":"ini id : 410","time":"2021-01-30T02:48:26+07:00"}
+{"file":"example.go:1199","level":"info","msg":"ini New name : null","time":"2021-01-30T02:48:26+07:00"}
+{"file":"example.go:1198","level":"info","msg":"ini id : 410","time":"2021-01-30T02:48:29+07:00"}
+{"file":"example.go:1199","level":"info","msg":"ini New name : null","time":"2021-01-30T02:48:29+07:00"}
+{"file":"example.go:1198","level":"info","msg":"ini id : 410","time":"2021-01-30T02:48:31+07:00"}
+{"file":"example.go:1199","level":"info","msg":"ini New name : null","time":"2021-01-30T02:48:31+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/daming kelar(1).pdf: no such file or directory","time":"2021-01-30T02:48:57+07:00"}
+{"file":"example.go:1198","level":"info","msg":"ini id : 409","time":"2021-01-30T02:49:13+07:00"}
+{"file":"example.go:1199","level":"info","msg":"ini New name : null","time":"2021-01-30T02:49:13+07:00"}
+{"file":"example.go:1198","level":"info","msg":"ini id : 409","time":"2021-01-30T02:49:14+07:00"}
+{"file":"example.go:1199","level":"info","msg":"ini New name : null","time":"2021-01-30T02:49:14+07:00"}
+{"file":"example.go:1198","level":"info","msg":"ini id : 409","time":"2021-01-30T02:49:17+07:00"}
+{"file":"example.go:1199","level":"info","msg":"ini New name : null","time":"2021-01-30T02:49:17+07:00"}
+{"file":"example.go:1198","level":"info","msg":"ini id : 435","time":"2021-01-30T02:49:55+07:00"}
+{"file":"example.go:1199","level":"info","msg":"ini New name : adi.pdf","time":"2021-01-30T02:49:55+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/KPM_Febyk alek satria.pdf: no such file or directory","time":"2021-01-30T03:01:00+07:00"}
