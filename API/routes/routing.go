@@ -31,10 +31,11 @@ func (Routing Routing) GetRoutes() *echo.Echo {
 	e.PUT("rename_folder/", controller.Rename_folder)                 //fix user
 	//e.POST("add_file/", controller.Add_file)                          //fix
 	// e.POST("add_folder/", controller.Add_folder)       //fix
-	e.POST("add_user/", controller.Add_user)           //fix owner
-	e.PUT("edit_user/", controller.Edit_user)          //fix owner
-	e.DELETE("delete_trash/", controller.Delete_trash) //fix user
-	e.POST("login/", controller.Login)                 //fix
+	e.POST("add_user/", controller.Add_user)                         //fix owner
+	e.PUT("edit_user/", controller.Edit_user)                        //fix owner
+	e.DELETE("delete_trash_file/", controller.Delete_trash_file)     //fix user
+	e.DELETE("delete_trash_folder/", controller.Delete_trash_folder) //fix user
+	e.POST("login/", controller.Login)                               //fix
 	//e.GET("hash_password/", controller.Hash_password)             //fix
 	e.GET("get_file_list/", controller.Get_file_list)                     //fix user
 	e.GET("get_folder_list/", controller.Get_folder_list)                 //fix user

@@ -141,7 +141,7 @@ func Create_folder(c echo.Context) error {
 		Data:    1,
 	}
 	curentpath := model.Curent_path
-	if curentpath == "" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Curent_path
@@ -167,7 +167,7 @@ func Upload_file(c echo.Context) error {
 	var model entity.Upload
 	c.Bind(&model)
 	curentpath := model.Path
-	if curentpath == "" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Path
@@ -182,7 +182,6 @@ func Upload_file(c echo.Context) error {
 		}
 	}
 	username := model.Username
-	utils.LogInfo(model.Username)
 	newfolder := root + username + curentpath
 	// ===========================================================cek jika directory usernmae belum ada
 	if isexist1(newfolder) == false {
@@ -258,7 +257,7 @@ func Upload_folder(c echo.Context) error {
 	var model entity.Upload
 	c.Bind(&model)
 	curentpath := model.Path
-	if curentpath == "" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Path
@@ -513,7 +512,7 @@ func Get_file_list(c echo.Context) error {
 	var input entity.Get_items
 	c.Bind(&model)
 	curentpath := model.Curent_path
-	if curentpath == "" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Curent_path
@@ -555,7 +554,7 @@ func Get_folder_list(c echo.Context) error {
 	var input entity.Get_items
 	c.Bind(&model)
 	curentpath := model.Curent_path
-	if curentpath == "" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Curent_path
@@ -592,7 +591,7 @@ func Get_all_item_list(c echo.Context) error {
 	var input entity.Get_items
 	c.Bind(&model)
 	curentpath := model.Curent_path
-	if curentpath == "" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Curent_path
@@ -1046,7 +1045,7 @@ func Edit_user(c echo.Context) error {
 func Delete_folder(c echo.Context) error {
 	var model entity.Delete_folder
 	c.Bind(&model)
-	syn := "select delete_folder('" + strconv.Itoa(model.Folder_id) + "','" + model.Username + "');"
+	syn := "select delete_folder('" + model.Folder_id + "','" + model.Username + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	res := responsegraph.Data{
 		Status:  constant.StatusSuccess,
@@ -1081,12 +1080,14 @@ func Delete_file(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func Delete_trash(c echo.Context) error {
+func Delete_trash_file(c echo.Context) error {
 	var model entity.Delete_trash
 	c.Bind(&model)
 	var path string
 	var oldname string
-	syn1 := "select * from get_item_information(" + strconv.Itoa(model.File_id) + ");"
+	utils.LogInfo("id : " + model.File_id)
+	utils.LogInfo("username : " + model.Owner)
+	syn1 := "select * from get_item_information('" + model.File_id + "');"
 	hasil1, err := db.Query(context.Background(), syn1)
 	if err != nil {
 		utils.LogError(err)
@@ -1096,7 +1097,43 @@ func Delete_trash(c echo.Context) error {
 			utils.LogError(err)
 		}
 	}
-	syn := "select delete_trash('" + strconv.Itoa(model.File_id) + "','" + model.Owner + "');"
+	syn := "select delete_trash_file('" + model.File_id + "','" + model.Owner + "');"
+	hasil, err := db.Exec(context.Background(), syn)
+	res := responsegraph.Data{
+		Status:  constant.StatusSuccess,
+		Message: "Berhasil delete trash",
+		Data:    int(hasil.RowsAffected()),
+	}
+	if err != nil {
+		res.Message = "Data gagal dihapus"
+		res.Data = 0
+		utils.LogError(err)
+		return c.JSON(http.StatusOK, res)
+	}
+	path_full := "upload/" + model.Owner + path
+	// ================================================================function untuk menghapus pada penyimpanan fisik
+	remove(path_full, oldname)
+	return c.JSON(http.StatusOK, res)
+}
+
+func Delete_trash_folder(c echo.Context) error {
+	var model entity.Delete_trash
+	c.Bind(&model)
+	var path string
+	var oldname string
+	utils.LogInfo("ini id : " + model.File_id)
+	utils.LogInfo("ini user : " + model.Owner)
+	syn1 := "select * from get_item_information('" + model.File_id + "');"
+	hasil1, err1 := db.Query(context.Background(), syn1)
+	if err1 != nil {
+		utils.LogError(err1)
+	}
+	for hasil1.Next() {
+		if err := hasil1.Scan(&oldname, &path); err != nil {
+			utils.LogError(err)
+		}
+	}
+	syn := "select * from delete_trash_folder('" + model.File_id + "','" + model.Owner + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	res := responsegraph.Data{
 		Status:  constant.StatusSuccess,
@@ -1137,7 +1174,7 @@ func Recovery_trash_file(c echo.Context) error {
 func Recovery_trash_folder(c echo.Context) error {
 	var model entity.Delete_folder
 	c.Bind(&model)
-	syn := "select recovery_trash_folder('" + strconv.Itoa(model.Folder_id) + "','" + model.Username + "');"
+	syn := "select recovery_trash_folder('" + model.Folder_id + "','" + model.Username + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	res := responsegraph.Data{
 		Status:  constant.StatusSuccess,
@@ -1158,7 +1195,10 @@ func Rename_file(c echo.Context) error {
 	c.Bind(&model)
 	var path string
 	var oldname string
-	syn1 := "select * from get_item_information(" + strconv.Itoa(model.Id) + ");"
+	if model.New_name == "" || model.New_name == "null" || model.New_name == "undefined" {
+		return c.JSON(http.StatusOK, "Nama baru tidak boleh kosong")
+	}
+	syn1 := "select * from get_item_information('" + model.Id + "');"
 	hasil1, err := db.Query(context.Background(), syn1)
 	if err != nil {
 		utils.LogError(err)
@@ -1168,7 +1208,8 @@ func Rename_file(c echo.Context) error {
 			utils.LogError(err)
 		}
 	}
-	syn := "select rename_file(" + strconv.Itoa(model.Id) + ",'" + model.New_name + "');"
+	ekstensi := strings.Split(oldname, ".")
+	syn := "select rename_file('" + model.Id + "','" + model.New_name + "." + ekstensi[(len(ekstensi)-1)] + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	res := responsegraph.Data{
 		Status:  constant.StatusSuccess,
@@ -1183,7 +1224,7 @@ func Rename_file(c echo.Context) error {
 	}
 	path_full := "upload/" + model.Username + path
 	// ================================================================function untuk rename pada penyimpanan fisik
-	rename(path_full, oldname, model.New_name)
+	rename(path_full, oldname, model.New_name+"."+ekstensi[(len(ekstensi)-1)])
 	return c.JSON(http.StatusOK, res)
 }
 
@@ -1192,7 +1233,7 @@ func Rename_folder(c echo.Context) error {
 	c.Bind(&model)
 	var path string
 	var oldname string
-	syn1 := "select * from get_item_information(" + strconv.Itoa(model.Id) + ");"
+	syn1 := "select * from get_item_information('" + model.Id + "');"
 	hasil1, err := db.Query(context.Background(), syn1)
 	if err != nil {
 		utils.LogError(err)
@@ -1202,7 +1243,7 @@ func Rename_folder(c echo.Context) error {
 			utils.LogError(err)
 		}
 	}
-	syn := "select rename_folder(" + strconv.Itoa(model.Id) + ",'" + model.New_item_name + "','" + model.Username + "');"
+	syn := "select rename_folder('" + model.Id + "','" + model.New_item_name + "','" + model.Username + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	res := responsegraph.Data{
 		Status:  constant.StatusSuccess,
@@ -1226,7 +1267,7 @@ func DownloadFile(c echo.Context) error {
 	c.Bind(&model)
 	root := "upload/" + model.Username
 	curentpath := model.Current_path
-	if curentpath == "" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Current_path
@@ -1314,3 +1355,8 @@ func Get_user_information(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, res)
 }
+
+// ===================================================================================================================percobaan time upload
+// file 45mb dengan split 10mb, upload time = 49s
+// file 45mb dengan split 100mb, upload time = 23s
+// upload 20 file dengan size 118mb, upload time = 9m12s
