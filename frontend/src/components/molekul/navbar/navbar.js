@@ -1,21 +1,19 @@
 import React from 'react';
-import { Search, Logo, Profil } from '../../atom';
+import {Logo, Profil, Logout } from '../../atom';
 
 const Navbar = () => {
     return(    
-            <nav class="container bg-white w-full border-b-2 border-gray-300 px-10">
-                <div className="flex justify-between items-center">
+            <div classname="z-40 bg-white w-full border-b-2 border-gray-300 px-10">
+                <div className="flex justify-between  items-center px-10">
                     <div className="flex items-center">
                         <Logo/>
                         <p className="font-semibold text-4xl">Storage</p>
                     </div>
                     <div className="flex items-center">
-                        <Search text = "Search"/>
-                        <Profil/>
+                        <Profil><Logout/></Profil>
                     </div>
                 </div>
-            </nav>
+            </div>
     )
 }
-
 export default Navbar

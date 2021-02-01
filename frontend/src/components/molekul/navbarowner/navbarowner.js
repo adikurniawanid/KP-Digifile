@@ -1,16 +1,16 @@
 import React from 'react';
-import { Search, Logo, Profil } from '../../atom';
+import { Logo, Logout, Profil } from '../../atom';
 
 const Navbarowner = () => {
     return(    
-            <nav class="container bg-white w-full border-b-2 border-gray-300 px-10">
+            <nav class="bg-white w-full border-b-2 border-gray-300 px-10 fixed-top">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center">
                         <Logo/>
                         <p className="font-semibold text-4xl">Storage</p>
                     </div>
                     <div className="flex items-center">
-                        <Profil/>
+                        <Profil><Logout/></Profil>
                     </div>
                 </div>
             </nav>

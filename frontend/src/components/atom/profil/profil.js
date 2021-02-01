@@ -1,10 +1,15 @@
 import React from 'react';
+import Avatar from 'react-avatar';
 
-function Profil() {
+function Profil(props) {
+const [open, setOpen]=React.useState(false);
     return(
-        <div className="w-12 h-12 rounded-full overflow-hidden">
-            <img className="w-full h-full object-cover" src = "https://akademik.unsri.ac.id/images/foto_mhs/2018/09021181823003.jpg"></img>
-        </div>
+        <>
+        <button onClick={()=>setOpen(!open)} className="w-12 h-12 rounded-full overflow-hidden items-center">
+            <Avatar className="m-auto" size={50} name={sessionStorage.getItem("Fullname")} textSizeRatio={1.75}/>
+        </button>
+        {open && props.children}
+        </>
     )
 }
 

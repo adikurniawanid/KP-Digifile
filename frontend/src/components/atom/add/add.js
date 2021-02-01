@@ -1,7 +1,5 @@
 import React,{useState} from 'react';
 import { FaPlus} from "react-icons/fa";
-import Addfolder from '../addfolder/addfolder';
-import Folder from '../folder/folder';
 
   
 function Add(props) {

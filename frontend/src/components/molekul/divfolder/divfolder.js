@@ -7,12 +7,10 @@ function Divfolder(props) {
     return(
       <div>
         <p>Folder</p>
-        <div className="flex h-auto">
-          
+        <div className="block">
             <Folderfix/>
-
             <Folderfix/>
-          {/* <Folder>
+          <Folder>
             <ul id="list" className="rounded-lg bg-white border-2 shadow w-44 p-2 space-y-2 ml-20 -mt-16 absolute">
               <li class="dropdown-item">Rename</li>
               <li class="dropdown-item mx-5">Dalate</li>
@@ -25,7 +23,7 @@ function Divfolder(props) {
           <Folder text = "B"/>
           <Folder text = "B"/>
           <Folder text = "B"/>
-          <Folder text = "B"/> */}
+          <Folder text = "B"/>
         </div>
      </div>
     )

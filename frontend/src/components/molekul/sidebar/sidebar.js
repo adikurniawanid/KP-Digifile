@@ -2,10 +2,29 @@ import React from 'react';
 import { Add } from '../../atom';
 import { FaTrashAlt, FaServer, FaHdd } from "react-icons/fa"
 import { FaFolderPlus, FaFileUpload, FaCloudUploadAlt } from "react-icons/fa";
+import { Component } from 'react';
+import axios from 'axios';
 
-const Sidebar = () => {
+
+class Sidebar extends Component{
+    state ={
+        Username : "rsf",
+        courses : null
+    }
+    componentWillMount(){
+        axios.get('http://192.168.0.188:12345/get_information_storage/',{params :{
+          Username : this.state.Username
+          }}).then(res=> {
+            console.log(res);
+            this.setState({courses : res.data.data})
+            console.log(this.state.courses)
+          })
+      }
+      
+// const Sidebar = () => {
+render(){
     return(    
-        <div className = "fixed h-screen bg-white px-16 pt-8 w-1/4">
+        <div className = "fixed h-screen bg-white px-16 pt-8 md:w-1/4 w-20">
             <div className ="">
                 <Add>
                     <ul id="list" className="bg-white rounded-lg p-4 w-56 mt-2 shadow absolute">
@@ -23,11 +42,13 @@ const Sidebar = () => {
                     <FaTrashAlt size = {30}/><a className="mx-4" href ="#">Trash</a>
                 </div>
                 <div className = "flex my-36">
-                    <FaServer size = {30}/><p className="mx-4">Penyimpanan</p>
+                    <FaServer size = {60}/><p className="mx-4">Penyimpanan {this.state.courses}</p>
+                    
                 </div>
             </div>
         </div>
     )
+}
 }
 
 export default Sidebar
