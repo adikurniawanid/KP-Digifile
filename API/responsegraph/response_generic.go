@@ -4,6 +4,18 @@ type ResponseGenericGet struct {
 	Status  string      `json:"status"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
+	Id      []int       `json:"id"`
+}
+type Getbool struct {
+	Status string `json:"status"`
+	Data   bool   `json:"data"`
+}
+type ResponseGenericGet2 struct {
+	Status  string      `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+	Data1   interface{} `json:"data1"`
+	Id      []int       `json:"id"`
 }
 
 type ResponseGenericIn struct {
@@ -31,7 +43,32 @@ type ResponseArrayMultiType struct {
 }
 
 type Data struct {
+	Status  string        `json:"status"`
+	Message string        `json:"message"`
+	Data    int           `json:"data"`
+	Data1   []interface{} `json:"data1"`
+}
+
+type Items struct {
+	Status   string   `json:"status"`
+	Message  string   `json:"message"`
+	Data     []string `json:"data"`
+	File     int      `json:"file"`
+	Ekstensi []string `json:"ekstensi"`
+	Id       []int    `json:"id"`
+}
+
+type Userinformation struct {
+	Status   string `json:"status"`
+	Message  string `json:"message"`
+	Username string `json:"Username"`
+	Name     string `json:"Name"`
+	Space    int    `json:"Space"`
+	Email    string `json:"Email"`
+}
+
+type Name struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
-	Data    int    `json:"data"`
+	Data    string `json:"data"`
 }
