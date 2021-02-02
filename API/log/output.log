@@ -1332,3 +1332,89 @@
 {"file":"example.go:1198","level":"info","msg":"ini id : 435","time":"2021-01-30T02:49:55+07:00"}
 {"file":"example.go:1199","level":"info","msg":"ini New name : adi.pdf","time":"2021-01-30T02:49:55+07:00"}
 {"file":"example.go:40","level":"error","msg":"stat upload/test/upload ini/Wallpapers/KPM_Febyk alek satria.pdf: no such file or directory","time":"2021-01-30T03:01:00+07:00"}
+{"file":"example.go:1279","level":"error","msg":"open upload/rsf//folder ku/roni/Beda Level(1).jpeg: no such file or directory","time":"2021-01-30T03:15:06+07:00"}
+{"file":"example.go:1279","level":"error","msg":"open upload/rsf//folder ku/roni/Beda Level.jpeg: no such file or directory","time":"2021-01-30T03:15:06+07:00"}
+{"file":"example.go:1187","level":"error","msg":"ERROR: invalid input syntax for type integer: \"null\" (SQLSTATE 22P02)","time":"2021-01-30T03:41:27+07:00"}
+{"file":"example.go:1124","level":"info","msg":"ini id : ","time":"2021-01-30T03:41:30+07:00"}
+{"file":"example.go:1125","level":"info","msg":"ini user : rsf","time":"2021-01-30T03:41:30+07:00"}
+{"file":"example.go:1129","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T03:41:30+07:00"}
+{"file":"example.go:1146","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T03:41:30+07:00"}
+{"file":"example.go:873","level":"info","msg":"ini username : null","time":"2021-01-30T04:02:45+07:00"}
+{"file":"example.go:873","level":"info","msg":"ini username : rsf","time":"2021-01-30T04:04:26+07:00"}
+{"file":"example.go:873","level":"info","msg":"ini username : rsf","time":"2021-01-30T04:04:34+07:00"}
+{"file":"example.go:873","level":"info","msg":"ini username : rsf","time":"2021-01-30T04:05:06+07:00"}
+{"file":"example.go:873","level":"info","msg":"ini username : rsf","time":"2021-01-30T04:05:49+07:00"}
+{"file":"example.go:873","level":"info","msg":"ini username : null","time":"2021-01-30T04:05:51+07:00"}
+{"file":"example.go:873","level":"info","msg":"ini username : rsf","time":"2021-01-30T04:06:21+07:00"}
+{"file":"example.go:873","level":"info","msg":"ini username : null","time":"2021-01-30T04:06:22+07:00"}
+{"file":"example.go:1106","level":"info","msg":"id : 57","time":"2021-01-30T04:15:55+07:00"}
+{"file":"example.go:1107","level":"info","msg":"username : rsf","time":"2021-01-30T04:15:55+07:00"}
+{"file":"example.go:1106","level":"info","msg":"id : 136","time":"2021-01-30T04:16:10+07:00"}
+{"file":"example.go:1107","level":"info","msg":"username : rsf","time":"2021-01-30T04:16:10+07:00"}
+{"file":"example.go:1142","level":"info","msg":"ini id : 126","time":"2021-01-30T04:16:18+07:00"}
+{"file":"example.go:1143","level":"info","msg":"ini user : rsf","time":"2021-01-30T04:16:18+07:00"}
+{"file":"example.go:1205","level":"error","msg":"ERROR: invalid input syntax for type integer: \"null\" (SQLSTATE 22P02)","time":"2021-01-30T04:25:37+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.dia.hai(1).png: no such file or directory","time":"2021-01-30T05:48:47+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.dia.hai(2).png: no such file or directory","time":"2021-01-30T05:48:47+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///CV-RONI STARKO FIRDAUS.png: no such file or directory","time":"2021-01-30T05:48:47+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.dia.hai.png: no such file or directory","time":"2021-01-30T05:48:47+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///Beda Level.jpeg: no such file or directory","time":"2021-01-30T05:48:47+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///Beda Level(1).jpeg: no such file or directory","time":"2021-01-30T05:48:47+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aktivitas(2).odt: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.dia.hai(2).png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.dia.hai(1).png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu(2).png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu(1).png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aktivitas.odt: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.dia.hai.png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu. wah.ahw .png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu. wah.ahw (2).png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu. wah.ahw (1).png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu. wah.ahw (3).png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///Beda Level(1).jpeg: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///coba(2).jpg: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///coba(1).jpg: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///CV 2020.jpg: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///coba.jpg: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///Beda Level.jpeg: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///CV-FEBYK ALEK SATRIA.jpg: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///favicon1 1.png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///febyk 4x6.jpg: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///favicon1 1(1).png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///favicon1 1(2).png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///CV-RONI STARKO FIRDAUS.png: no such file or directory","time":"2021-01-30T05:50:03+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aktivitas(2).odt: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.dia.hai(2).png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu(2).png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu(1).png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aktivitas.odt: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.dia.hai(1).png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.dia.hai.png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu. wah.ahw (2).png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu. wah.ahw (3).png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu. wah.ahw (1).png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu.png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///aku.kamu. wah.ahw .png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///Beda Level(1).jpeg: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///Beda Level.jpeg: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///CV 2020.jpg: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///coba(1).jpg: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///coba(2).jpg: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///coba.jpg: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///CV-FEBYK ALEK SATRIA.jpg: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///CV-RONI STARKO FIRDAUS.png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///febyk 4x6.jpg: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///favicon1 1.png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///favicon1 1(2).png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/rsf///favicon1 1(1).png: no such file or directory","time":"2021-01-30T05:54:30+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/ema///Super Jago Speaking 1.jpeg: no such file or directory","time":"2021-01-30T14:34:05+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/ema///Super Jago Speaking 1.jpeg: no such file or directory","time":"2021-01-30T14:34:28+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/ema///Super Jago Speaking 1.jpeg: no such file or directory","time":"2021-01-30T14:35:23+07:00"}
+{"file":"example.go:1106","level":"info","msg":"id : 321","time":"2021-01-30T14:35:24+07:00"}
+{"file":"example.go:1107","level":"info","msg":"username : ema","time":"2021-01-30T14:35:24+07:00"}
+{"file":"example.go:50","level":"error","msg":"stat upload/ihsan/: no such file or directory","time":"2021-01-30T14:51:33+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/ihsan/daming kelar.odt: no such file or directory","time":"2021-01-30T14:51:33+07:00"}
+{"file":"example.go:1304","level":"error","msg":"open upload/ema///febyk 4x6.jpg: no such file or directory","time":"2021-01-30T14:54:30+07:00"}
+{"file":"example.go:40","level":"error","msg":"stat upload/ihsan/sistem pakar minggu 1.mkv: no such file or directory","time":"2021-01-30T14:55:24+07:00"}
+{"file":"example.go:1076","level":"error","msg":"ERROR: invalid input syntax for type integer: \"\" (SQLSTATE 22P02)","time":"2021-01-30T14:57:03+07:00"}
