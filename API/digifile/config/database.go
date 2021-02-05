@@ -2,10 +2,10 @@ package config
 
 import (
 	"context"
+	"digifile/constant"
+	"digifile/utils"
 	"fmt"
 	"os"
-	"template-api-gecho/constant"
-	"template-api-gecho/utils"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )

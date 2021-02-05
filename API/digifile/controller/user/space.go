@@ -2,12 +2,12 @@ package user
 
 import (
 	"context"
+	"digifile/constant"
+	"digifile/entity/owner"
+	"digifile/entity/user"
+	"digifile/responsegraph"
+	"digifile/utils"
 	"net/http"
-	"template-api-gecho/constant"
-	"template-api-gecho/entity/owner"
-	"template-api-gecho/entity/user"
-	"template-api-gecho/responsegraph"
-	"template-api-gecho/utils"
 
 	"github.com/labstack/echo/v4"
 	"github.com/shopspring/decimal"

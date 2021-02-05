@@ -2,13 +2,13 @@ package owner
 
 import (
 	"context"
+	"digifile/constant"
+	"digifile/entity"
+	"digifile/entity/owner"
+	"digifile/responsegraph"
+	"digifile/utils"
 	"net/http"
 	"strconv"
-	"template-api-gecho/constant"
-	"template-api-gecho/entity"
-	"template-api-gecho/entity/owner"
-	"template-api-gecho/responsegraph"
-	"template-api-gecho/utils"
 
 	"github.com/labstack/echo/v4"
 )

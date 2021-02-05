@@ -1,10 +1,10 @@
 package main
 
 import (
+	"digifile/constant"
+	"digifile/routes"
 	"fmt"
 	"os"
-	"template-api-gecho/constant"
-	"template-api-gecho/routes"
 )
 
 func main() {

@@ -1,10 +1,10 @@
 package user
 
 import (
+	"digifile/utils"
 	"os"
 	"strconv"
 	"strings"
-	"template-api-gecho/utils"
 )
 
 func verify_duplicate_folder(path string, name string) string {

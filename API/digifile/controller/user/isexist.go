@@ -1,8 +1,8 @@
 package user
 
 import (
+	"digifile/utils"
 	"os"
-	"template-api-gecho/utils"
 )
 
 func isexist(path string, name string) bool {

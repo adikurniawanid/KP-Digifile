@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"digifile/constant"
+	"digifile/entity/user"
+	"digifile/responsegraph"
 	"net/http"
-	"template-api-gecho/constant"
-	"template-api-gecho/entity/user"
-	"template-api-gecho/responsegraph"
 
 	"github.com/labstack/echo/v4"
 )

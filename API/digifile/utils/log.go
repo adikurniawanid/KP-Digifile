@@ -1,12 +1,12 @@
 package utils
 
 import (
+	"digifile/constant"
 	"fmt"
 	"os"
 	"runtime"
 	"strconv"
 	"strings"
-	"template-api-gecho/constant"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"

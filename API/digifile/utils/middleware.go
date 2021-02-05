@@ -1,10 +1,10 @@
 package utils
 
 import (
+	"digifile/constant"
+	"digifile/entity"
 	"net/http"
 	"os"
-	"template-api-gecho/constant"
-	"template-api-gecho/entity"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"

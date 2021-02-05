@@ -2,12 +2,12 @@ package user
 
 import (
 	"context"
+	"digifile/constant"
+	"digifile/entity/user"
+	"digifile/responsegraph"
+	"digifile/utils"
 	"net/http"
 	"strings"
-	"template-api-gecho/constant"
-	"template-api-gecho/entity/user"
-	"template-api-gecho/responsegraph"
-	"template-api-gecho/utils"
 
 	"github.com/labstack/echo/v4"
 )

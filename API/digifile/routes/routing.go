@@ -1,10 +1,10 @@
 package routes
 
 import (
+	"digifile/controller"
+	"digifile/controller/owner"
+	"digifile/controller/user"
 	"net/http"
-	"template-api-gecho/controller"
-	"template-api-gecho/controller/owner"
-	"template-api-gecho/controller/user"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

@@ -2,8 +2,8 @@ package controller
 
 import (
 	"context"
-	"template-api-gecho/entity/user"
-	"template-api-gecho/utils"
+	"digifile/entity/user"
+	"digifile/utils"
 
 	"github.com/labstack/echo/v4"
 )

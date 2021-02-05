@@ -2,9 +2,9 @@ package controller
 
 import (
 	"context"
+	"digifile/entity/user"
+	"digifile/utils"
 	"net/http"
-	"template-api-gecho/entity/user"
-	"template-api-gecho/utils"
 
 	"github.com/labstack/echo/v4"
 )

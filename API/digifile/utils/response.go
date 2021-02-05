@@ -1,6 +1,6 @@
 package utils
 
-import "template-api-gecho/responsegraph"
+import "digifile/responsegraph"
 
 func GetResData(status string, message string, data interface{}) responsegraph.ResponseGenericGet {
 	res := responsegraph.ResponseGenericGet{
