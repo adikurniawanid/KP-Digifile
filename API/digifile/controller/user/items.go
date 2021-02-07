@@ -1,6 +1,7 @@
 package user
 
 import (
+	"archive/zip"
 	"context"
 	"digifile/config"
 	"digifile/constant"
@@ -8,6 +9,7 @@ import (
 	"digifile/responsegraph"
 	"digifile/utils"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -79,7 +81,7 @@ func Create_folder(c echo.Context) error {
 		Data:    1,
 	}
 	curentpath := model.Curent_path
-	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Curent_path
@@ -107,7 +109,7 @@ func Upload_file(c echo.Context) error {
 	var model user.Upload
 	c.Bind(&model)
 	curentpath := model.Path
-	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Path
@@ -197,7 +199,7 @@ func Upload_folder(c echo.Context) error {
 	var model user.Upload
 	c.Bind(&model)
 	curentpath := model.Path
-	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Path
@@ -456,7 +458,7 @@ func DownloadFile(c echo.Context) error {
 	c.Bind(&model)
 	root := "upload/" + model.Username
 	curentpath := model.Current_path
-	if curentpath == "" || curentpath == "null" || curentpath == "undefined" {
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
 		curentpath = "/"
 	} else {
 		curentpath = "/" + model.Current_path
@@ -464,13 +466,113 @@ func DownloadFile(c echo.Context) error {
 	}
 	//===============================================================================================membuka data yang ada pada penyimpanan fisik sesuai parameter yang ditentukan
 	file, err := os.Open(root + curentpath + model.File_name)
+	fi, _ := os.Stat(root + curentpath + model.File_name)
 	if err != nil {
 		utils.LogError(err)
 	}
 	defer file.Close()
 	c.Response().Writer.Header().Set("Content-Disposition", "attachment; filename="+model.File_name)
+	c.Response().Writer.Header().Set("Content-Length", strconv.Itoa(int(fi.Size())))
 	c.Response().Writer.Header().Set("Content-Type", c.Request().Header.Get("Content-Type"))
 	// ==========================================================================================menyimpan file pada penyimpanan fisik
 	_, err = io.Copy(c.Response().Writer, file)
 	return c.File(model.File_name)
+}
+
+func DownloadFolder(c echo.Context) error {
+	var model user.Download
+	c.Bind(&model)
+	root := "upload/" + model.Username
+	curentpath := model.Current_path
+	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
+		curentpath = "/"
+	} else {
+		curentpath = "/" + model.Current_path
+		curentpath += "/"
+	}
+	//===============================================================================================kompresi folder ke zip dalam directory downtemp
+	fulldir, path, name := ZipWriter(root, curentpath, model.File_name)
+	//===============================================================================================membuka data yang ada pada penyimpanan fisik sesuai parameter yang ditentukan
+	file, err := os.Open(fulldir)
+	fi, _ := os.Stat(fulldir)
+	if err != nil {
+		utils.LogError(err)
+	}
+	defer file.Close()
+	temp := strings.Split(model.File_name, "/")
+	filename := temp[0] + ".zip"
+	c.Response().Writer.Header().Set("Content-Disposition", "attachment; filename="+filename)
+	c.Response().Writer.Header().Set("Content-Length", strconv.Itoa(int(fi.Size())))
+	c.Response().Writer.Header().Set("Content-Type", c.Request().Header.Get("Content-Type"))
+	// ==========================================================================================menyimpan file pada penyimpanan fisik
+	_, err = io.Copy(c.Response().Writer, file)
+	//remove zip file temp in downtemp directory
+	remove(path, name)
+	return c.File(filename)
+}
+
+func addFiles(w *zip.Writer, basePath, baseInZip string) {
+	// Open the Directory
+	files, err := ioutil.ReadDir(basePath)
+	if err != nil {
+		utils.LogError(err)
+	}
+
+	for _, file := range files {
+		utils.LogInfo(basePath + file.Name())
+		if !file.IsDir() {
+			dat, err := ioutil.ReadFile(basePath + file.Name())
+			if err != nil {
+				utils.LogError(err)
+			}
+
+			// Add some files to the archive.
+			f, err := w.Create(baseInZip + file.Name())
+			if err != nil {
+				utils.LogError(err)
+			}
+			_, err = f.Write(dat)
+			if err != nil {
+				utils.LogError(err)
+			}
+		} else if file.IsDir() {
+
+			// Recurse
+			newBase := basePath + file.Name() + "/"
+			utils.LogInfo("Recursing and Adding SubDir: " + file.Name())
+			utils.LogInfo("Recursing and Adding SubDir: " + newBase)
+
+			addFiles(w, newBase, baseInZip+file.Name()+"/")
+		}
+	}
+}
+
+func ZipWriter(root string, path string, foldername string) (string, string, string) {
+	baseFolder := root + path + foldername
+	baseOutput := "downtemp/temp.zip"
+	base := "downtemp/"
+	name := "temp.zip"
+	// Get a Buffer to Write To
+	outFile, err := os.Create(baseOutput)
+	if err != nil {
+		utils.LogError(err)
+	}
+	defer outFile.Close()
+
+	// Create a new zip archive.
+	w := zip.NewWriter(outFile)
+
+	// Add some files to the archive.
+	addFiles(w, baseFolder, foldername+"/")
+
+	if err != nil {
+		utils.LogError(err)
+	}
+
+	// Make sure to check the error on Close.
+	err = w.Close()
+	if err != nil {
+		utils.LogError(err)
+	}
+	return baseOutput, base, name
 }

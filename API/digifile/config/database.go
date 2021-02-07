@@ -12,8 +12,6 @@ import (
 
 var db *pgxpool.Pool
 
-type Database struct{}
-
 func init() {
 	var err error
 
@@ -28,10 +26,6 @@ func init() {
 	if err != nil {
 		utils.LogFatal(err)
 	}
-}
-
-func (Database Database) GetDatabase() *pgxpool.Pool {
-	return db
 }
 
 func Getdb() *pgxpool.Pool {
