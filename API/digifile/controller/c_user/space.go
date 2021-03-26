@@ -1,4 +1,4 @@
-package user
+package c_user
 
 import (
 	"context"
@@ -37,7 +37,7 @@ func Get_information_storage(c echo.Context) error {
 	var input user.Users
 	c.Bind(&input)
 	var model owner.Detail_activity
-	syn := "select * from get_information_storage('" + input.Username + "');"
+	syn := "select * from get_information_storage('" + input.Uid + "');"
 	test, err := db.Query(context.Background(), syn)
 	for test.Next() {
 		if err := test.Scan(&model.Description); err != nil {

@@ -14,19 +14,19 @@ func Login(c echo.Context) error {
 	page = 0
 	var model user.Users
 	c.Bind(&model)
-	is_username_exist := Is_username_exist(c)
-	is_admin := Is_admin(c)
-	is_user := Is_user(c)
-	verify_login := Verify_login(c)
+	verify_login, uid := Verify_login(c)
+	is_username_exist := Is_username_exist(uid)
+	is_admin := Is_admin(uid)
+	is_user := Is_user(uid)
 	if is_username_exist == true {
 		if is_admin == true {
 			if verify_login == true {
-				Set_online(c)
+				Set_online(uid)
 				page = 1
 			}
 		} else if is_user == true {
 			if verify_login == true {
-				Set_online(c)
+				Set_online(uid)
 				page = 2
 			}
 		}

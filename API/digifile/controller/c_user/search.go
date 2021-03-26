@@ -1,4 +1,4 @@
-package user
+package c_user
 
 import (
 	"context"
@@ -22,7 +22,7 @@ func Search_user(c echo.Context) error {
 	var tampung []string
 	var item_id []int
 	var item int
-	syn := "select * from search_user('" + model.Username + "','" + model.Item_name + "');"
+	syn := "select * from search_user('" + model.Id + "','" + model.Item_name + "');"
 	test, err := db.Query(context.Background(), syn)
 	if err != nil {
 		utils.LogError(err)
@@ -36,7 +36,7 @@ func Search_user(c echo.Context) error {
 		result = append(result, input.Item_name)
 		item_id = append(item_id, item)
 	}
-	count := "select * from get_search_file_count('" + model.Username + "','" + model.Item_name + "');"
+	count := "select * from get_search_file_count('" + model.Id + "','" + model.Item_name + "');"
 	hasil1, err := db.Query(context.Background(), count)
 	if err != nil {
 		utils.LogError(err)

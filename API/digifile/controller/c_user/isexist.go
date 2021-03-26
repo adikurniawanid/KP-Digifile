@@ -1,4 +1,4 @@
-package user
+package c_user
 
 import (
 	"digifile/utils"

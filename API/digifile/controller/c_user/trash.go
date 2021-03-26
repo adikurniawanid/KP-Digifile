@@ -1,4 +1,4 @@
-package user
+package c_user
 
 import (
 	"context"
@@ -21,7 +21,7 @@ func Get_trash_file_list(c echo.Context) error {
 	var tampung []string
 	var item_id []int
 	var item int
-	syn := "select * from get_trash_file_list('" + model.Username + "');"
+	syn := "select * from get_trash_file_list('" + model.Id + "');"
 	test, err := db.Query(context.Background(), syn)
 	if err != nil {
 		utils.LogError(err)
@@ -54,7 +54,7 @@ func Get_trash_folder_list(c echo.Context) error {
 	var result []interface{}
 	var item_id []int
 	var item int
-	syn := "select * from get_trash_folder_list('" + model.Username + "');"
+	syn := "select * from get_trash_folder_list('" + model.Id + "');"
 	test, err := db.Query(context.Background(), syn)
 	if err != nil {
 		utils.LogError(err)
@@ -85,7 +85,7 @@ func Get_all_trash_list(c echo.Context) error {
 	var tampung []string
 	var item_id []int
 	var item int
-	syn := "select * from get_all_trash_list('" + model.Username + "');"
+	syn := "select * from get_all_trash_list('" + model.Id + "');"
 	hasil, err := db.Query(context.Background(), syn)
 	if err != nil {
 		utils.LogError(err)
@@ -97,7 +97,7 @@ func Get_all_trash_list(c echo.Context) error {
 		items = append(items, model.Item_name)
 		item_id = append(item_id, item)
 	}
-	count := "select * from get_trash_file_count('" + model.Username + "');"
+	count := "select * from get_trash_file_count('" + model.Id + "');"
 	hasil1, err := db.Query(context.Background(), count)
 	if err != nil {
 		utils.LogError(err)
@@ -128,7 +128,7 @@ func Delete_trash_file(c echo.Context) error {
 	var path string
 	var oldname string
 	utils.LogInfo("id : " + model.File_id)
-	utils.LogInfo("username : " + model.Owner)
+	utils.LogInfo("userid : " + model.Id)
 	syn1 := "select * from get_item_information('" + model.File_id + "');"
 	hasil1, err := db.Query(context.Background(), syn1)
 	if err != nil {
@@ -139,7 +139,7 @@ func Delete_trash_file(c echo.Context) error {
 			utils.LogError(err)
 		}
 	}
-	syn := "select delete_trash_file('" + model.File_id + "','" + model.Owner + "');"
+	syn := "select delete_trash_file('" + model.File_id + "','" + model.Id + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	res := responsegraph.Data{
 		Status:  constant.StatusSuccess,
@@ -152,7 +152,7 @@ func Delete_trash_file(c echo.Context) error {
 		utils.LogError(err)
 		return c.JSON(http.StatusOK, res)
 	}
-	path_full := "upload/" + model.Owner + path
+	path_full := "upload/" + model.Id + path
 	// ================================================================function untuk menghapus pada penyimpanan fisik
 	remove(path_full, oldname)
 	return c.JSON(http.StatusOK, res)
@@ -164,7 +164,7 @@ func Delete_trash_folder(c echo.Context) error {
 	var path string
 	var oldname string
 	utils.LogInfo("ini id : " + model.File_id)
-	utils.LogInfo("ini user : " + model.Owner)
+	utils.LogInfo("ini user : " + model.Id)
 	syn1 := "select * from get_item_information('" + model.File_id + "');"
 	hasil1, err1 := db.Query(context.Background(), syn1)
 	if err1 != nil {
@@ -175,7 +175,7 @@ func Delete_trash_folder(c echo.Context) error {
 			utils.LogError(err)
 		}
 	}
-	syn := "select * from delete_trash_folder('" + model.File_id + "','" + model.Owner + "');"
+	syn := "select * from delete_trash_folder('" + model.File_id + "','" + model.Id + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	res := responsegraph.Data{
 		Status:  constant.StatusSuccess,
@@ -188,7 +188,7 @@ func Delete_trash_folder(c echo.Context) error {
 		utils.LogError(err)
 		return c.JSON(http.StatusOK, res)
 	}
-	path_full := "upload/" + model.Owner + path
+	path_full := "upload/" + model.Id + path
 	// ================================================================function untuk menghapus pada penyimpanan fisik
 	remove(path_full, oldname)
 	return c.JSON(http.StatusOK, res)

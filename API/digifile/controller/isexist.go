@@ -2,18 +2,13 @@ package controller
 
 import (
 	"context"
-	"digifile/entity/user"
 	"digifile/utils"
-
-	"github.com/labstack/echo/v4"
 )
 
-func Is_username_exist(c echo.Context) bool {
-	var model user.Users
-	c.Bind(&model)
+func Is_username_exist(uid string) bool {
 	var result bool
 	result = true
-	syn := "select is_username_exist('" + model.Username + "');"
+	syn := "select is_username_exist('" + uid + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	if hasil.RowsAffected() == 0 {
 		result = false
@@ -26,12 +21,10 @@ func Is_username_exist(c echo.Context) bool {
 	return result
 }
 
-func Is_user(c echo.Context) bool {
-	var model user.Users
-	c.Bind(&model)
+func Is_user(uid string) bool {
 	var result bool
 	result = true
-	syn := "select is_user('" + model.Username + "');"
+	syn := "select is_user('" + uid + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	if hasil.RowsAffected() == 0 {
 		result = false
@@ -44,12 +37,10 @@ func Is_user(c echo.Context) bool {
 	return result
 }
 
-func Is_admin(c echo.Context) bool {
-	var model user.Users
-	c.Bind(&model)
+func Is_admin(uid string) bool {
 	var result bool
 	result = true
-	syn := "select is_admin('" + model.Username + "');"
+	syn := "select is_admin('" + uid + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	if hasil.RowsAffected() == 0 {
 		result = false

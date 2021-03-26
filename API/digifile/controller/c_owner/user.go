@@ -1,4 +1,4 @@
-package owner
+package c_owner
 
 import (
 	"context"
@@ -18,6 +18,7 @@ import (
 var db = config.Getdb()
 
 func Add_user(c echo.Context) error {
+	uid, _ := utils.GetUID()
 	var model user.Users
 	c.Bind(&model)
 	res := responsegraph.Data{
@@ -25,8 +26,18 @@ func Add_user(c echo.Context) error {
 		Message: "",
 		Data:    2,
 	}
-	if controller.Is_username_exist(c) {
+	if controller.Is_username_exist(model.Uid) {
 		res.Message = "Username telah terdaftar"
+		return c.JSON(http.StatusOK, res)
+	}
+	_, errEmail := utils.IsEmailFormat(model.Email)
+	if errEmail != nil {
+		res.Message = "Email tidak valid"
+		return c.JSON(http.StatusOK, res)
+	}
+	_, errPhone := utils.IsEmailFormat(model.Phone)
+	if errPhone != nil {
+		res.Message = "Nomor Handphone tidak valid"
 		return c.JSON(http.StatusOK, res)
 	}
 	if model.Space < 0 {
@@ -34,7 +45,7 @@ func Add_user(c echo.Context) error {
 		res.Message = "Space tidak valid"
 		return c.JSON(http.StatusOK, res)
 	}
-	syn := "select add_user('" + model.Username + "','" + model.Name + "','" + controller.Hash_256(model.Password) + "','" + model.Phone + "','" + model.Email + "','" + strconv.Itoa(model.Space) + "');"
+	syn := "select add_user('" + uid + "','" + model.Username + "','" + model.Name + "','" + controller.Hash_256(model.Password) + "','" + model.Phone + "','" + model.Email + "','" + strconv.Itoa(model.Space) + "');"
 	hasil, err := db.Exec(context.Background(), syn)
 	if err != nil {
 		res.Message = "Data gagal ditambahkan"
@@ -56,7 +67,7 @@ func Edit_user(c echo.Context) error {
 		Message: "Username tidak ditemukan",
 		Data:    2,
 	}
-	if controller.Is_username_exist(c) == false {
+	if controller.Is_username_exist(model.Uid) == false {
 		return c.JSON(http.StatusOK, res)
 	}
 	syn := "select edit_user('" + model.Username + "','" + model.Name + "','" + strconv.Itoa(model.Space) + "','" + model.Email + "');"

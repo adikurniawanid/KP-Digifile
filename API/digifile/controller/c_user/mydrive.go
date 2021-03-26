@@ -1,4 +1,4 @@
-package user
+package c_user
 
 import (
 	"context"
@@ -11,6 +11,46 @@ import (
 
 	"github.com/labstack/echo/v4"
 )
+
+func Get_parent_id(Item_id string) (string, error) {
+	var parent_id string
+	syn := "select * from get_parent_id('" + Item_id + "');"
+	test, err := db.Query(context.Background(), syn)
+	if err != nil {
+		utils.LogError(err)
+		return "", err
+	}
+	for test.Next() {
+		if err := test.Scan(&parent_id); err != nil {
+			utils.LogError(err)
+			return "", err
+		}
+	}
+	return parent_id, nil
+}
+
+func Get_path(Item_id string, User_id string) (string, error) {
+	var path string
+	for {
+		parent_id, err := Get_parent_id(Item_id)
+		Item_id = parent_id
+		if err != nil {
+			utils.LogError(err)
+			return "", err
+		}
+		path += parent_id + "/"
+		if parent_id == User_id {
+			break
+		}
+	}
+	var temp []string
+	var result string
+	temp = strings.Split(path, "/")
+	for i := (len(temp) - 1); i >= 0; i-- {
+		result += temp[i] + "/"
+	}
+	return result, nil
+}
 
 func Get_file_list(c echo.Context) error {
 	var model user.Get_items
@@ -28,7 +68,7 @@ func Get_file_list(c echo.Context) error {
 	var tampung []string
 	var item_id []int
 	var item int
-	syn := "select * from get_file_list('" + model.Username + "','" + curentpath + "');"
+	syn := "select * from get_file_list('" + model.Id + "','" + curentpath + "');"
 	test, err := db.Query(context.Background(), syn)
 	if err != nil {
 		utils.LogError(err)
@@ -68,7 +108,7 @@ func Get_folder_list(c echo.Context) error {
 	var result []interface{}
 	var item_id []int
 	var item int
-	syn := "select * from get_folder_list('" + model.Username + "','" + curentpath + "');"
+	syn := "select * from get_folder_list('" + model.Id + "','" + curentpath + "');"
 	test, err := db.Query(context.Background(), syn)
 	if err != nil {
 		utils.LogError(err)
@@ -108,7 +148,7 @@ func Get_all_item_list(c echo.Context) error {
 	var tampung []string
 	var item_id []int
 	var item int
-	syn := "select * from Get_all_item_list('" + model.Username + "','" + curentpath + "');"
+	syn := "select * from Get_all_item_list('" + model.Id + "','" + curentpath + "');"
 	test, err := db.Query(context.Background(), syn)
 	if err != nil {
 		utils.LogError(err)
@@ -122,7 +162,7 @@ func Get_all_item_list(c echo.Context) error {
 		result = append(result, input.Item_name)
 		item_id = append(item_id, item)
 	}
-	count := "select * from get_file_count('" + model.Username + "','" + curentpath + "');"
+	count := "select * from get_file_count('" + model.Id + "','" + curentpath + "');"
 	hasil1, err := db.Query(context.Background(), count)
 	if err != nil {
 		utils.LogError(err)

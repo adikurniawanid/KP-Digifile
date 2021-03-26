@@ -14,19 +14,19 @@ type (
 		Trash_status bool   `json:"trash_status"`
 		Owner        string `json:"owner"`
 	}
-	Upload struct {
-		Username string `json:"username"`
-		Path     string `json:"path"`
+	Items struct {
+		Id_user   string `json:"Id_user"`
+		Id_parent string `json:"Id_parent"`
 	}
 
 	Download struct {
-		Username     string `json:"username"`
-		Current_path string `json:"Current_path"`
-		File_name    string `json:"File_name"`
+		Id        string `json:"Id"`
+		Folder_id string `json:"Folder_id"`
+		File_name string `json:"File_name"`
 	}
 	Create_folder struct {
 		Username    string `json:"username"`
-		Curent_path string `json:"curent_path"`
+		Folder_id   string `json:"folder_id"`
 		Folder_name string `json:"Folder_name"`
 	}
 	Delete_file struct {
@@ -38,7 +38,7 @@ type (
 		Username  string `json:"username"`
 	}
 	Delete_trash struct {
-		Owner   string `json:"owner"`
+		Id      string `json:"Id"`
 		File_id string `json:"file_id"`
 	}
 	Rename_file struct {
@@ -52,7 +52,7 @@ type (
 		Id            string `json:"id"`
 	}
 	Get_items struct {
-		Username    string `json:"username"`
+		Id          string `json:"Id"`
 		Item_name   string `json:"item_name"`
 		Curent_path string `json:"Curent_path"`
 	}

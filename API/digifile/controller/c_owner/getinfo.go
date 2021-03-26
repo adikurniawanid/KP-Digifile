@@ -1,4 +1,4 @@
-package owner
+package c_owner
 
 import (
 	"context"
@@ -16,7 +16,7 @@ import (
 func Get_user_information(c echo.Context) error {
 	var model user.Users
 	c.Bind(&model)
-	syn := "select * from get_user_information('" + model.Username + "');"
+	syn := "select * from get_user_information('" + model.Uid + "');"
 	hasil, err := db.Query(context.Background(), syn)
 	if err != nil {
 		utils.LogError(err)
@@ -41,7 +41,7 @@ func Get_name(c echo.Context) error {
 	var result string
 	var input user.Users
 	c.Bind(&input)
-	syn := "select * from get_name('" + input.Username + "');"
+	syn := "select * from get_name('" + input.Uid + "');"
 	test, err := db.Query(context.Background(), syn)
 	for test.Next() {
 		if err := test.Scan(&result); err != nil {
@@ -65,7 +65,7 @@ func Logs(c echo.Context) error {
 	var model user.Users
 	var result int
 	c.Bind(&model)
-	syn := "select count(log_id) as jumlah from logs where username='" + model.Username + "';"
+	syn := "select count(log_id) as jumlah from logs where username='" + model.Uid + "';"
 	test, err := db.Query(context.Background(), syn)
 	for test.Next() {
 		if err := test.Scan(&result); err != nil {

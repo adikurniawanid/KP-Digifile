@@ -1,4 +1,4 @@
-package owner
+package c_owner
 
 import (
 	"context"
@@ -45,7 +45,7 @@ func Get_user_log_activity(c echo.Context) error {
 	var input user.Users
 	c.Bind(&input)
 	var model owner.Get_user_log_activity
-	syn := "select * from get_user_log_activity('" + input.Username + "','" + strconv.Itoa(input.Page) + "');"
+	syn := "select * from get_user_log_activity('" + input.Uid + "','" + strconv.Itoa(input.Page) + "');"
 	test, err := db.Query(context.Background(), syn)
 	for test.Next() {
 		if err := test.Scan(&model.Tanggal, &model.Last_activity); err != nil {

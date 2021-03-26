@@ -1,4 +1,4 @@
-package user
+package c_user
 
 import (
 	"archive/zip"
@@ -19,10 +19,10 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-//==================================================================deklarasi variabel db secara global
+//deklarasi variabel db secara global
 var db = config.Getdb()
 
-//==================================================================func file log db
+//func file log db
 func Add_folder(folder_name string, directory string, owner string) (string, error) {
 	syn := "select * from add_folder('" + folder_name + "','" + directory + "','" + owner + "');"
 	hasil, err := db.Exec(context.Background(), syn)
@@ -52,7 +52,7 @@ func Add_file(file_name string, path string, size int64, username string) (bool,
 	return result, err
 }
 
-//==========================================================================func file fisik
+//func file fisik
 func remove(path string, name string) string {
 	tampung := path + name
 	err := os.RemoveAll(tampung)
@@ -80,11 +80,11 @@ func Create_folder(c echo.Context) error {
 		Message: "Berhasil Create Folder",
 		Data:    1,
 	}
-	curentpath := model.Curent_path
+	curentpath := model.Folder_id
 	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
 		curentpath = "/"
 	} else {
-		curentpath = "/" + model.Curent_path
+		curentpath = "/" + model.Folder_id
 		curentpath += "/"
 	}
 	if isexist1(root + model.Username + curentpath + model.Folder_name) {
@@ -103,88 +103,84 @@ func Create_folder(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, res)
 }
 
-//============================================================================func upload
+//func upload
 
 func Upload_file(c echo.Context) error {
-	var model user.Upload
+	var model user.Items
 	c.Bind(&model)
-	curentpath := model.Path
+	curentpath, _ := Get_path(model.Id_parent, model.Id_user)
 	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
 		curentpath = "/"
-	} else {
-		curentpath = "/" + model.Path
-		curentpath += "/"
 	}
 	root := "upload/"
-	// =======================================================cek jika directory root belum ada
+	//cek jika directory root belum ada
 	if isexist1(root) == false {
 		err := os.MkdirAll(root, 0755)
 		if err != nil {
 			utils.LogError(err)
 		}
 	}
-	username := model.Username
-	newfolder := root + username + curentpath
-	// ===========================================================cek jika directory usernmae belum ada
+	newfolder := root + curentpath
+	//cek jika directory usernmae belum ada
 	if isexist1(newfolder) == false {
 		err := os.MkdirAll(newfolder, 0755)
 		if err != nil {
 			utils.LogError(err)
 		}
 	}
-	// =================================================================ini untuk meminta Request data dan membaginya sesuai size yang di definisikan
+	//ini untuk meminta Request data dan membaginya sesuai size yang di definisikan
 	err1 := c.Request().ParseMultipartForm(2 * 1024 * 1024 * 1024)
 	if err1 != nil {
 		utils.LogError(err1)
 	}
-	// ====================================================================ini agar dapat upload multi
+	//ini agar dapat upload multi
 	m, err2 := c.MultipartForm()
 	if err2 != nil {
 		utils.LogError(err2)
 	}
-	// =========================================================================ini nama parameter file
+	//ini nama parameter file
 	files := m.File["myfiles"]
 	for i, _ := range files {
-		// =========================================================================ini cek penyimpanan drive akun
-		if Is_enough_space(model.Username, strconv.Itoa(int(files[i].Size))) == false {
+		//ini cek penyimpanan drive akun
+		if Is_enough_space(model.Id_user, strconv.Itoa(int(files[i].Size))) == false {
 			return c.JSON(http.StatusAccepted, "Ruang penyimpanan tidak mencukupi untuk upload. Semua proses upload file selanjutnya dibatalkan")
 		}
-		// ============================================================================ini membaca file
+		//ini membaca file
 		file, err := files[i].Open()
 		defer file.Close()
 		if err != nil {
 			utils.LogError(err)
 		}
 		newfile := ""
-		// ============================================================================ini cek directory file ada atau tidak
+		//ini cek directory file ada atau tidak
 		if isexist(newfolder, files[i].Filename) {
 			newfile = verify_duplicate_file(newfolder, files[i].Filename)
-			// =============================================================================ini di split untuk mendapatkan nama file
+			//ini di split untuk mendapatkan nama file
 			arr := strings.Split(newfile, "/")
-			// =================================================================================ini memanggil function db
-			Add_file(arr[(len(arr)-1)], curentpath, files[i].Size, model.Username)
-			// =================================================================================ini proses pembuatan file pada temporary disk
+			//ini memanggil function db
+			Add_file(arr[(len(arr)-1)], curentpath, files[i].Size, model.Id_user)
+			//ini proses pembuatan file pada temporary disk
 			dst, err1 := os.Create(newfile)
 			defer dst.Close()
 			if err1 != nil {
 				utils.LogError(err1)
 			}
-			// ======================================================================================ini untuk menyimpan file
+			//ini untuk menyimpan file
 			if _, err := io.Copy(dst, file); err != nil {
 				if err != nil {
 					utils.LogError(err)
 				}
 			}
 		} else {
-			// =================================================================================ini proses pembuatan file pada temporary disk
+			//ini proses pembuatan file pada temporary disk
 			dst, err1 := os.Create(newfolder + files[i].Filename)
-			// =================================================================================ini memanggil function db
-			Add_file(files[i].Filename, curentpath, files[i].Size, model.Username)
+			//ini memanggil function db
+			Add_file(files[i].Filename, curentpath, files[i].Size, model.Id_user)
 			defer dst.Close()
 			if err1 != nil {
 				utils.LogError(err1)
 			}
-			// ======================================================================================ini untuk menyimpan file
+			//ini untuk menyimpan file
 			if _, err := io.Copy(dst, file); err != nil {
 				if err != nil {
 					utils.LogError(err)
@@ -196,69 +192,69 @@ func Upload_file(c echo.Context) error {
 }
 
 func Upload_folder(c echo.Context) error {
-	var model user.Upload
+	var model user.Items
 	c.Bind(&model)
-	curentpath := model.Path
+	curentpath := model.Id_parent
 	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
 		curentpath = "/"
 	} else {
-		curentpath = "/" + model.Path
+		curentpath = "/" + model.Id_parent
 		curentpath += "/"
 	}
 	root := "upload/"
-	// =======================================================cek jika directory root belum ada
+	//cek jika directory root belum ada
 	if isexist1(root) == false {
 		err := os.MkdirAll(root, 0755)
 		if err != nil {
 			utils.LogError(err)
 		}
 	}
-	username := model.Username
-	utils.LogInfo(model.Username)
+	username := model.Id_user
+	utils.LogInfo(model.Id_user)
 	newfolder := root + username + curentpath
-	// ===========================================================cek jika directory usernmae belum ada
+	//cek jika directory usernmae belum ada
 	if isexist1(newfolder) == false {
 		err := os.MkdirAll(newfolder, 0755)
 		if err != nil {
 			utils.LogError(err)
 		}
 	}
-	// =================================================================ini untuk meminta Request data dan membaginya sesuai size yang di definisikan
+	//ini untuk meminta Request data dan membaginya sesuai size yang di definisikan
 	err1 := c.Request().ParseMultipartForm(2 * 1024 * 1024 * 1024)
 	if err1 != nil {
 		utils.LogError(err1)
 	}
-	// ====================================================================ini agar dapat upload multi
+	//ini agar dapat upload multi
 	m, err2 := c.MultipartForm()
 	if err2 != nil {
 		utils.LogError(err2)
 	}
-	// =========================================================================ini nama parameter file
+	//ini nama parameter file
 	files := m.File["myfiles"]
 	for i, _ := range files {
-		if Is_enough_space(model.Username, strconv.Itoa(int(files[i].Size))) == false {
+		if Is_enough_space(model.Id_user, strconv.Itoa(int(files[i].Size))) == false {
 			return c.JSON(http.StatusAccepted, "Ruang penyimpanan tidak mencukupi untuk upload. Semua proses upload file selanjutnya dibatalkan")
 		}
-		// ============================================================================ini membaca file
+		//ini membaca file
 		file, err := files[i].Open()
 		defer file.Close()
 		if err != nil {
 			utils.LogError(err)
 		}
 		newfile := ""
-		// ============================================================================ini cek directory file ada atau tidak
+		//ini cek directory file ada atau tidak
 		if isexist(newfolder, files[i].Filename) {
 			newfile = verify_duplicate_file(newfolder, files[i].Filename)
-			// =============================================================================ini di split untuk mendapatkan nama file
+			//ini di split untuk mendapatkan nama file
 			arr := strings.Split(newfile, "/")
 			ah := arr[:(len(arr) - 1)]
 			folder := ""
-			// ==================================================================================proses pengambilan folder dari file
+			//proses pengambilan folder dari file
 			for i := 0; i < len(ah); i++ {
 				folder += ah[i] + "/"
 			}
 			folderdb := "/"
-			// ==============================================================================================proses pengambilan folder untuk db
+			//proses pengambilan folder untuk db
 			for i := 2; i < (len(ah) - 1); i++ {
 				folderdb += ah[i] + "/"
 			}
@@ -267,23 +263,23 @@ func Upload_folder(c echo.Context) error {
 			for i := 2; i < len(ah); i++ {
 				directory += ah[i] + "/"
 			}
-			// =================================================================================================pengecekan directory
+			//pengecekan directory
 			if isexist1(folder) == false {
-				// =======================================================================================================pemanggilan function db
-				Add_folder(foldername, folderdb, model.Username)
+				//pemanggilan function db
+				Add_folder(foldername, folderdb, model.Id_user)
 			}
-			// ===============================================================================================================pembuatan directory pada penyimpanan fisik
+			//pembuatan directory pada penyimpanan fisik
 			os.MkdirAll(folder, 0755)
 			filename := arr[(len(arr) - 1)]
-			// ================================================================================================================pemanggilan function db
-			Add_file(filename, directory, files[i].Size, model.Username)
-			// =================================================================================ini proses pembuatan file pada temporary disk
+			//pemanggilan function db
+			Add_file(filename, directory, files[i].Size, model.Id_user)
+			//ini proses pembuatan file pada temporary disk
 			dst, err1 := os.Create(newfile)
 			defer dst.Close()
 			if err1 != nil {
 				utils.LogError(err1)
 			}
-			// ======================================================================================ini untuk menyimpan file
+			//ini untuk menyimpan file
 			if _, err := io.Copy(dst, file); err != nil {
 				if err != nil {
 					utils.LogError(err)
@@ -291,16 +287,16 @@ func Upload_folder(c echo.Context) error {
 			}
 		} else {
 			temp := newfolder + files[i].Filename
-			// =============================================================================ini di split untuk mendapatkan nama file
+			//ini di split untuk mendapatkan nama file
 			arr := strings.Split(temp, "/")
 			ah := arr[:(len(arr) - 1)]
 			folder := ""
-			// ==================================================================================proses pengambilan folder dari file
+			//proses pengambilan folder dari file
 			for i := 0; i < len(ah); i++ {
 				folder += ah[i] + "/"
 			}
 			folderdb := "/"
-			// ==============================================================================================proses pengambilan folder untuk db
+			//proses pengambilan folder untuk db
 			for i := 2; i < (len(ah) - 1); i++ {
 				folderdb += ah[i] + "/"
 			}
@@ -309,23 +305,23 @@ func Upload_folder(c echo.Context) error {
 			for i := 2; i < len(ah); i++ {
 				directory += ah[i] + "/"
 			}
-			// =================================================================================================pengecekan directory
+			//pengecekan directory
 			if isexist1(folder) == false {
-				// =======================================================================================================pemanggilan function db
-				Add_folder(foldername, folderdb, model.Username)
+				//pemanggilan function db
+				Add_folder(foldername, folderdb, model.Id_user)
 			}
-			// ===============================================================================================================pembuatan directory pada penyimpanan fisik
+			//pembuatan directory pada penyimpanan fisik
 			os.MkdirAll(folder, 0755)
 			filename := arr[(len(arr) - 1)]
-			// =================================================================================ini proses pembuatan file pada temporary disk
+			//ini proses pembuatan file pada temporary disk
 			dst, err1 := os.Create(newfolder + files[i].Filename)
-			// ================================================================================================================pemanggilan function db
-			Add_file(filename, directory, files[i].Size, model.Username)
+			//pemanggilan function db
+			Add_file(filename, directory, files[i].Size, model.Id_user)
 			defer dst.Close()
 			if err1 != nil {
 				utils.LogError(err1)
 			}
-			// ======================================================================================ini untuk menyimpan file
+			//ini untuk menyimpan file
 			if _, err := io.Copy(dst, file); err != nil {
 				if err != nil {
 					utils.LogError(err)
@@ -413,8 +409,8 @@ func Rename_file(c echo.Context) error {
 		utils.LogError(err)
 		return c.JSON(http.StatusOK, res)
 	}
-	path_full := "upload/" + model.Username + path
-	// ================================================================function untuk rename pada penyimpanan fisik
+	path_full := "upload/" + model.Id + path
+	//function untuk rename pada penyimpanan fisik
 	rename(path_full, oldname, model.New_name+ekstensi)
 	return c.JSON(http.StatusOK, res)
 }
@@ -447,8 +443,8 @@ func Rename_folder(c echo.Context) error {
 		utils.LogError(err)
 		return c.JSON(http.StatusOK, res)
 	}
-	path_full := "upload/" + model.Username + path
-	// ================================================================function untuk rename pada penyimpanan fisik
+	path_full := "upload/" + model.Id + path
+	//function untuk rename pada penyimpanan fisik
 	rename(path_full, oldname, model.New_item_name)
 	return c.JSON(http.StatusOK, res)
 }
@@ -456,15 +452,15 @@ func Rename_folder(c echo.Context) error {
 func DownloadFile(c echo.Context) error {
 	var model user.Download
 	c.Bind(&model)
-	root := "upload/" + model.Username
-	curentpath := model.Current_path
+	root := "upload/" + model.Id
+	curentpath := model.Folder_id
 	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
 		curentpath = "/"
 	} else {
-		curentpath = "/" + model.Current_path
+		curentpath = "/" + model.Folder_id
 		curentpath += "/"
 	}
-	//===============================================================================================membuka data yang ada pada penyimpanan fisik sesuai parameter yang ditentukan
+	//membuka data yang ada pada penyimpanan fisik sesuai parameter yang ditentukan
 	file, err := os.Open(root + curentpath + model.File_name)
 	fi, _ := os.Stat(root + curentpath + model.File_name)
 	if err != nil {
@@ -474,7 +470,7 @@ func DownloadFile(c echo.Context) error {
 	c.Response().Writer.Header().Set("Content-Disposition", "attachment; filename="+model.File_name)
 	c.Response().Writer.Header().Set("Content-Length", strconv.Itoa(int(fi.Size())))
 	c.Response().Writer.Header().Set("Content-Type", c.Request().Header.Get("Content-Type"))
-	// ==========================================================================================menyimpan file pada penyimpanan fisik
+	//menyimpan file pada penyimpanan fisik
 	_, err = io.Copy(c.Response().Writer, file)
 	return c.File(model.File_name)
 }
@@ -482,17 +478,17 @@ func DownloadFile(c echo.Context) error {
 func DownloadFolder(c echo.Context) error {
 	var model user.Download
 	c.Bind(&model)
-	root := "upload/" + model.Username
-	curentpath := model.Current_path
+	root := "upload/" + model.Id
+	curentpath := model.Folder_id
 	if curentpath == "" || curentpath == "null" || curentpath == "undefined" || curentpath == "/" {
 		curentpath = "/"
 	} else {
-		curentpath = "/" + model.Current_path
+		curentpath = "/" + model.Folder_id
 		curentpath += "/"
 	}
-	//===============================================================================================kompresi folder ke zip dalam directory downtemp
+	//kompresi folder ke zip dalam directory downtemp
 	fulldir, path, name := ZipWriter(root, curentpath, model.File_name)
-	//===============================================================================================membuka data yang ada pada penyimpanan fisik sesuai parameter yang ditentukan
+	//membuka data yang ada pada penyimpanan fisik sesuai parameter yang ditentukan
 	file, err := os.Open(fulldir)
 	fi, _ := os.Stat(fulldir)
 	if err != nil {
@@ -504,7 +500,7 @@ func DownloadFolder(c echo.Context) error {
 	c.Response().Writer.Header().Set("Content-Disposition", "attachment; filename="+filename)
 	c.Response().Writer.Header().Set("Content-Length", strconv.Itoa(int(fi.Size())))
 	c.Response().Writer.Header().Set("Content-Type", c.Request().Header.Get("Content-Type"))
-	// ==========================================================================================menyimpan file pada penyimpanan fisik
+	//menyimpan file pada penyimpanan fisik
 	_, err = io.Copy(c.Response().Writer, file)
 	//remove zip file temp in downtemp directory
 	remove(path, name)
@@ -512,7 +508,7 @@ func DownloadFolder(c echo.Context) error {
 }
 
 func addFiles(w *zip.Writer, basePath, baseInZip string) {
-	// Open the Directory
+	//Open the Directory
 	files, err := ioutil.ReadDir(basePath)
 	if err != nil {
 		utils.LogError(err)
@@ -526,7 +522,7 @@ func addFiles(w *zip.Writer, basePath, baseInZip string) {
 				utils.LogError(err)
 			}
 
-			// Add some files to the archive.
+			//Add some files to the archive.
 			f, err := w.Create(baseInZip + file.Name())
 			if err != nil {
 				utils.LogError(err)
@@ -537,7 +533,7 @@ func addFiles(w *zip.Writer, basePath, baseInZip string) {
 			}
 		} else if file.IsDir() {
 
-			// Recurse
+			//Recurse
 			newBase := basePath + file.Name() + "/"
 			utils.LogInfo("Recursing and Adding SubDir: " + file.Name())
 			utils.LogInfo("Recursing and Adding SubDir: " + newBase)
@@ -552,24 +548,24 @@ func ZipWriter(root string, path string, foldername string) (string, string, str
 	baseOutput := "downtemp/temp.zip"
 	base := "downtemp/"
 	name := "temp.zip"
-	// Get a Buffer to Write To
+	//Get a Buffer to Write To
 	outFile, err := os.Create(baseOutput)
 	if err != nil {
 		utils.LogError(err)
 	}
 	defer outFile.Close()
 
-	// Create a new zip archive.
+	//Create a new zip archive.
 	w := zip.NewWriter(outFile)
 
-	// Add some files to the archive.
+	//Add some files to the archive.
 	addFiles(w, baseFolder, foldername+"/")
 
 	if err != nil {
 		utils.LogError(err)
 	}
 
-	// Make sure to check the error on Close.
+	//Make sure to check the error on Close.
 	err = w.Close()
 	if err != nil {
 		utils.LogError(err)
